@@ -142,6 +142,10 @@ class WP_User_Taxonomy {
 		// Register the taxonomy
 		$this->register_user_taxonomy();
 
+		// Bulk edit
+		add_action('admin_init', array( $this, 'bulk_edit_action' ) );
+		add_filter('views_users', array( $this, 'bulk_edit' ) );
+
 		// Include users by taxonomy term in users.php
 		add_action( 'pre_get_users', array( $this, 'pre_get_users' ) );
 
@@ -268,6 +272,15 @@ class WP_User_Taxonomy {
 			}
 			body.users-php.tax-<?php echo esc_attr( $this->taxonomy ); ?> .wrap > h1 {
 				display: none;
+			}
+			.user-tax-form fieldset {
+				margin: 8px 10px 0 0;
+			}
+			.subsubsub + form + br.clear {
+				display: none;
+			}
+			.tax-actions {
+				margin-bottom: 5px;
 			}
 		</style>
 
@@ -545,6 +558,155 @@ class WP_User_Taxonomy {
 			'user',
 			$this->parse_options()
 		);
+	}
+
+	/** Bulk Edit *************************************************************/
+
+	/**
+	 * Handle bulk editing of users
+	 *
+	 * @since 0.1.0
+	 */
+	public function bulk_edit_action() {
+
+		// Bail if not a bulk edit request
+		if ( ! isset( $_REQUEST[ $this->taxonomy . '-submit' ] ) || empty( $_POST[ $this->taxonomy ] ) ) {
+			return;
+		}
+
+		check_admin_referer( "bulk-edit-{$this->taxonomy}" );
+
+		// Get an array of users from the string
+		parse_str( urldecode( $_POST[ $this->taxonomy . '-users'] ), $users );
+
+		// Bail if no users to edit
+		if ( empty( $users['users'] ) ) {
+			return;
+		}
+
+		$users    = $users['users'];
+		$action   = strstr( $_POST[ $this->taxonomy ], '-', true );
+		$term     = str_replace( $action, '', $_POST[ $this->taxonomy ] );
+
+		// Loop through users
+		foreach ( $users as $user ) {
+
+			// Skip if current user cannot edit this user
+			if ( ! current_user_can( 'edit_user', $user ) ) {
+				continue;
+			}
+
+			// Get term slugs of user for this taxonomy
+			$terms        = wp_get_terms_for_user( $user, $this->taxonomy );
+			$update_terms = wp_list_pluck( $terms, 'slug' );
+
+			// Adding
+			if ( 'add' === $action ) {
+				if ( ! in_array( $term, $update_terms ) ) {
+					$update_terms[] = $term;
+				}
+
+			// Removing
+			} elseif ( 'remove' === $action ) {
+				$index = array_search( $term, $update_terms );
+				if ( isset( $update_terms[ $index ] ) ) {
+					unset( $update_terms[ $index ] );
+				}
+			}
+
+			// Delete all groups if they're empty
+			if ( empty( $update_terms ) ) {
+				$update_terms = null;
+			}
+
+			// Update terms for users
+			if ( $update_terms !== $terms ) {
+				wp_set_terms_for_user( $user, $this->taxonomy, $update_terms, true );
+			}
+		}
+
+		// Success
+		wp_safe_redirect( admin_url( 'users.php' ) );
+		die;
+	}
+
+	/**
+	 * Output the bulk edit markup
+	 *
+	 * @since 0.1.0
+	 *
+	 * @param   type  $views
+	 * @return  type
+	 */
+	public function bulk_edit( $views = array() ) {
+
+		// Bail if user cannot edit other users
+		if ( ! current_user_can( 'edit_users' ) ) {
+			return $views;
+		}
+
+		// Get taxonomy & terms
+		$tax   = get_taxonomy( $this->taxonomy );
+		$terms = get_terms( $this->taxonomy, array(
+			'hide_empty' => false
+		) ); ?>
+
+		<form method="post" class="user-tax-form">
+			<fieldset class="alignleft">
+				<legend class="screen-reader-text"><?php esc_html_e( 'Update Groups', 'wp-user-terms' ); ?></legend>
+
+				<input name="<?php echo esc_attr( $this->taxonomy ); ?>-users" value="" type="hidden" id="<?php echo esc_attr( $this->taxonomy ); ?>-bulk-users" />
+
+				<label for="<?php echo esc_attr( $this->taxonomy ); ?>-select" class="screen-reader-text">
+					<?php echo esc_html( $tax->labels->name ); ?>
+				</label>
+
+				<select class="tax-picker" name="<?php echo esc_attr( $this->taxonomy ); ?>" id="<?php echo esc_attr( $this->taxonomy ); ?>-select">
+					<option value=""><?php printf( esc_html__( '%s Bulk Actions', 'wp-user-groups' ), $tax->labels->name ); ?></option>
+
+					<optgroup label="<?php esc_html_e( 'Add', 'wp-user-groups' ); ?>">
+
+						<?php foreach ( $terms as $term ) : ?>
+
+							<option value="add-<?php echo esc_attr( $term->slug ); ?>"><?php echo esc_html( $term->name ); ?></option>
+
+						<?php endforeach; ?>
+
+					</optgroup>
+
+					<optgroup label="<?php esc_html_e( 'Remove', 'wp-user-groups' ); ?>">
+
+						<?php foreach ( $terms as $term ) : ?>
+
+							<option value="remove-<?php echo esc_attr( $term->slug ); ?>"><?php echo esc_html( $term->name ); ?></option>
+
+						<?php endforeach; ?>
+
+					</optgroup>
+
+				</select>
+
+				<?php wp_nonce_field( "bulk-edit-{$this->taxonomy}" ); ?>
+
+				<?php submit_button( esc_html__( 'Apply' ), 'action', $this->taxonomy . '-submit', false ); ?>
+
+			</fieldset>
+		</form>
+
+		<script type="text/javascript">
+			jQuery( document ).ready( function( $ ) {
+				$( '.tablenav.bottom' ).remove();
+				$( '.wrap' ).append( jQuery( '.user-tax-form' ) );
+				$( '.user-tax-form' ).live( 'submit', function() {
+					var users = $( '.wp-list-table.users .check-column input:checked' ).serialize();
+					$( '#<?php echo esc_attr( $this->taxonomy ); ?>-bulk-users' ).val( users );
+				} );
+			} );
+		</script>
+
+		<?php
+
+		return $views;
 	}
 
 	/**
