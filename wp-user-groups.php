@@ -622,7 +622,7 @@ class WP_User_Taxonomy {
 		if ( ! empty( $_GET[ $this->taxonomy ] ) ) {
 
 			// Sanitize taxonomies
-			$groups = array_map( 'sanitize_key', explode( ',', (array) $_GET[ $this->taxonomy ] ) );
+			$groups = array_map( 'sanitize_key', explode( ',', $_GET[ $this->taxonomy ] ) );
 			$ids    = array();
 
 			// Get terms
