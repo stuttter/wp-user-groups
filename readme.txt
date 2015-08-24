@@ -13,6 +13,18 @@ Group users together with taxonomies & terms.
 
 WP User Groups allows users to be categorized using custom taxonomies & terms.
 
+Also checkout:
+
+* [WP Term Meta](https://wordpress.org/plugins/wp-term-meta/ "Sort taxonomy terms, your way.")
+* [WP Term Order](https://wordpress.org/plugins/wp-term-order/ "Sort taxonomy terms, your way.")
+* [WP Term Colors](https://wordpress.org/plugins/wp-term-colors/ "Pretty colors for categories, tags, and other taxonomy terms.")
+* [WP Term Icons](https://wordpress.org/plugins/wp-term-icons/ "Pretty icons for categories, tags, and other taxonomy terms.")
+* [WP Event Calendar](https://wordpress.org/plugins/wp-event-calendar/ "Flexible events, with a calendar view.")
+
+== Screenshots ==
+
+1. User Groups & Types
+
 == Installation ==
 
 1. Download and install using the built in WordPress plugin installer.
