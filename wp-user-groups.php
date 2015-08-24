@@ -943,8 +943,8 @@ class WP_User_Taxonomy {
 		<script type="text/javascript">
 			jQuery( document ).ready( function( $ ) {
 				$( '.tablenav.bottom' ).remove();
-				$( '.wrap' ).append( jQuery( '.user-tax-form' ) );
-				$( '.user-tax-form' ).live( 'submit', function() {
+				$( '.wrap' ).append( $( '.user-tax-form' ) );
+				$( '.wrap' ).on( 'submit', '.user-tax-form', function() {
 					var users = $( '.wp-list-table.users .check-column input:checked' ).serialize();
 					$( '#<?php echo esc_attr( $this->taxonomy ); ?>-bulk-users' ).val( users );
 				} );
