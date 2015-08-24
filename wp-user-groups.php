@@ -5,7 +5,7 @@
  * Plugin URI:  https://wordpress.org/plugins/wp-user-groups/
  * Description: Group users together with taxonomies & terms.
  * Author:      John James Jacoby
- * Version:     0.1.0
+ * Version:     0.1.1
  * Author URI:  https://profiles.wordpress.org/johnjamesjacoby/
  * License:     GPL2
  */
@@ -14,13 +14,27 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Register user groups
+ * Register default user group taxonomies
+ *
+ * This function is hooked onto WordPress's `init` action and creates two new
+ * `WP_User_Taxonomy` objects for user "groups" and "types". It can be unhooked
+ * and these taxonomies can be replaced with your own custom ones.
  *
  * @since 0.1.0
  */
 function wp_register_default_user_taxonomies() {
-	new WP_User_Taxonomy( 'group', 'users/group', array( 'singular' => 'Group', 'plural' => 'Groups' ) );
-	new WP_User_Taxonomy( 'type',  'users/type',  array( 'singular' => 'Type',  'plural' => 'Types'  ) );
+
+	// "Groups" taxonomy
+	new WP_User_Taxonomy( 'group', 'users/group', array(
+		'singular' => __( 'Group',  'wp-user-groups' ),
+		'plural'   => __( 'Groups', 'wp-user-groups' )
+	) );
+
+	// "Types" taxonomy
+	new WP_User_Taxonomy( 'type',  'users/type',  array(
+		'singular' => __( 'Type',  'wp-user-groups' ),
+		'plural'   => __( 'Types', 'wp-user-groups' )
+	) );
 }
 add_action( 'init', 'wp_register_default_user_taxonomies' );
 
@@ -92,6 +106,7 @@ function wp_set_terms_for_user( $user_id, $taxonomy, $terms = array(), $bulk = f
 		wp_set_object_terms( $user_id, $_terms, $taxonomy, false );
 	}
 
+	// Clean the cache
 	clean_object_term_cache( $user_id, $taxonomy );
 }
 
@@ -105,9 +120,45 @@ if ( ! class_exists( 'WP_User_Taxonomy' ) ) :
  */
 class WP_User_Taxonomy {
 
+	/**
+	 * The unique ID to use for the taxonomy type
+	 *
+	 * @since 0.1.0
+	 *
+	 * @var string
+	 */
 	public $taxonomy = '';
+
+	/**
+	 * The URL friendly slug to use for the taxonomy
+	 *
+	 * @since 0.1.0
+	 *
+	 * @var string
+	 */
 	public $slug = '';
+
+	/**
+	 * Array of taxonomy properties
+	 *
+	 * Use the custom `singular` and `plural` arguments to let this class
+	 * generate labels for you. Note that labels cannot be translated using
+	 * this method, so if you need different languages, use the `$labels`
+	 * array below.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @var array
+	 */
 	public $args = array();
+
+	/**
+	 * Array of taxonomy labels, if you'd like to customize them completely
+	 *
+	 * @since 0.1.0
+	 *
+	 * @var array
+	 */
 	public $labels = array();
 
 	/**
@@ -127,6 +178,8 @@ class WP_User_Taxonomy {
 			return;
 		}
 
+		/** Class Variables ***************************************************/
+
 		// Set the taxonomy
 		$this->taxonomy = sanitize_key( $taxonomy );
 		$this->slug     = sanitize_text_field( $slug );
@@ -142,9 +195,20 @@ class WP_User_Taxonomy {
 		// Register the taxonomy
 		$this->register_user_taxonomy();
 
+		// Hook into actions & filters
+		$this->hooks();
+	}
+
+	/**
+	 * Hook in to actions & filters
+	 *
+	 * @since 0.1.1
+	 */
+	protected function hooks() {
+
 		// Bulk edit
-		add_action('admin_init', array( $this, 'bulk_edit_action' ) );
-		add_filter('views_users', array( $this, 'bulk_edit' ) );
+		add_action( 'admin_init',  array( $this, 'bulk_edit_action' ) );
+		add_filter( 'views_users', array( $this, 'bulk_edit'        ) );
 
 		// Include users by taxonomy term in users.php
 		add_action( 'pre_get_users', array( $this, 'pre_get_users' ) );
@@ -260,18 +324,120 @@ class WP_User_Taxonomy {
 	 * @since 0.1.0
 	 */
 	public function admin_head() {
-	?>
+		static $done = false;
+
+		if ( false === $done ) :
+			$done = true; ?>
 
 		<style type="text/css">
-			.column-users {
-				width: 10%;
-				text-align: center;
-			}
 			.column-<?php echo esc_attr( $this->taxonomy ); ?> {
 				width: 10%;
 			}
 			body.users-php.tax-<?php echo esc_attr( $this->taxonomy ); ?> .wrap > h1 {
 				display: none;
+			}
+		<?php endif; ?>
+			table.user-groups {
+				margin: 0;
+			}
+
+			table.user-groups .row-actions {
+				visibility: hidden;
+			}
+			table.user-groups tr:hover .row-actions {
+				visibility: visible;
+			}
+			table.user-groups thead td.check-column,
+			table.user-groups tfoot td.check-column,
+			table.user-groups .inactive th.check-column{
+				padding-left: 6px;
+			}
+			table.user-groups tbody th.check-column,
+			table.user-groups tbody {
+				padding: 12px 0 0 2px;
+			}
+			table.user-groups th,
+			table.user-groups td {
+				padding: 10px;
+				vertical-align: top;
+				width: auto;
+				font-weight: normal;
+			}
+
+			table.user-groups .column-primary {
+				width: 25%;
+			}
+
+			table.user-groups .column-primary strong {
+				display: block;
+				margin-bottom: .2em;
+				font-size: 14px;
+			}
+
+			table.user-groups .column-users {
+				width: 10%;
+				padding-right: 0;
+				text-align: center;
+			}
+
+			table.user-groups .description {
+				color: #666;
+			}
+
+			table.user-groups .inactive td,
+			table.user-groups .inactive th,
+			table.user-groups .active td,
+			table.user-groups .active th {
+				padding: 10px 9px;
+			}
+
+			table.user-groups .active td,
+			table.user-groups .active th {
+				background-color: #f7fcfe;
+			}
+
+			table.user-groups .inactive td,
+			table.user-groups .inactive th,
+			table.user-groups .active td,
+			table.user-groups .active th {
+				-webkit-box-shadow: inset 0 -1px 0 rgba(0,0,0,0.1);
+				box-shadow: inset 0 -1px 0 rgba(0,0,0,0.1);
+			}
+
+			table.user-groups tr.active + tr.inactive th,
+			table.user-groups tr.active + tr.inactive td {
+				border-top: 1px solid rgba(0,0,0,0.03);
+				-webkit-box-shadow: inset 0 1px 0 rgba(0,0,0,0.02), inset 0 -1px 0 #e1e1e1;
+				box-shadow: inset 0 1px 0 rgba(0,0,0,0.02), inset 0 -1px 0 #e1e1e1;
+			}
+
+			table.user-groups tr.active + tr.inactive.update th,
+			table.user-groups tr.active + tr.inactive.update td,
+			table.user-groups tr.active + tr.inactive.updated th,
+			table.user-groups tr.active + tr.inactive.updated td,
+			table.user-groups tbody tr:last-of-type td,
+			table.user-groups tbody tr:last-of-type th {
+				-webkit-box-shadow: none;
+				box-shadow: none;
+			}
+
+			table.user-groups .active th.check-column {
+				border-left: 4px solid #00a0d2;
+			}
+
+			table.user-groups .plugin-title,
+			table.user-groups .theme-title {
+				padding-right: 12px;
+				white-space:nowrap;
+			}
+
+			table.user-groups .inactive .plugin-title strong {
+				font-weight: 400;
+			}
+
+			.column-users {
+				width: 10%;
+				text-align: center;
 			}
 			.user-tax-form fieldset {
 				margin: 8px 10px 0 0;
@@ -282,9 +448,12 @@ class WP_User_Taxonomy {
 			.tax-actions {
 				margin-bottom: 5px;
 			}
+
+		<?php if ( false === $done ) : ?>
 		</style>
 
 	<?php
+		endif;
 	}
 
 	/**
@@ -352,7 +521,7 @@ class WP_User_Taxonomy {
 		unset( $columns['posts'] );
 
 		// Add the "Users" column
-		$columns['users'] = esc_html__( 'Users', 'wp-user-terms' );
+		$columns['users'] = esc_html__( 'Users', 'wp-user-groups' );
 
 		// Return modified columns
 		return $columns;
@@ -394,6 +563,11 @@ class WP_User_Taxonomy {
 			return;
 		}
 
+		// Bail if no UI for taxonomy
+		if ( false === $tax->show_ui ) {
+			return;
+		}
+
 		// Get the terms of the taxonomy.
 		$terms = get_terms( $this->taxonomy, array(
 			'hide_empty' => false
@@ -405,7 +579,7 @@ class WP_User_Taxonomy {
 		if ( ! isset( $GLOBALS['wp_user_taxonomies'] ) ) : ?>
 
 			<h3 id="<?php echo esc_html( $this->taxonomy ); ?>">
-				<?php esc_html_e( 'Relationships', 'wp-user-terms' ); ?>
+				<?php esc_html_e( 'Relationships', 'wp-user-groups' ); ?>
 			</h3>
 
 			<?php
@@ -422,35 +596,108 @@ class WP_User_Taxonomy {
 						<?php echo esc_html( $tax->labels->name ); ?>
 					</label>
 				</th>
-				<td><?php
+				<td>
+					<table class="wp-list-table widefat fixed striped user-groups">
+						<thead>
+							<tr>
+								<td id="cb" class="manage-column column-cb check-column">
+									<label class="screen-reader-text" for="cb-select-all-1"><?php esc_html_e( 'Select All', 'wp-user-groups' ); ?></label>
+									<input id="cb-select-all-1" type="checkbox">
+								</td>
+								<th scope="col" class="manage-column column-name column-primary"><?php esc_html_e( 'Name', 'wp-user-groups' ); ?></th>
+								<th scope="col" class="manage-column column-description"><?php esc_html_e( 'Description', 'wp-user-groups' ); ?></th>
+								<th scope="col" class="manage-column column-users"><?php esc_html_e( 'Users', 'wp-user-groups' ); ?></th>
+							</tr>
+						</thead>
+						<tbody>
 
-					// If there are any terms available, loop through them and display checkboxes.
-					if ( ! empty( $terms ) ) : ?>
+							<?php if ( ! empty( $terms ) ) :
 
-						<ul>
+								foreach ( $terms as $term ) :
+									$active = is_object_in_term( $user->ID, $this->taxonomy, $term->slug ); ?>
 
-							<?php foreach ( $terms as $term ) : ?>
+									<tr class="<?php echo ( true === $active ) ? 'active' : 'inactive'; ?>">
+										<th scope="row" class="check-column">
+											<input type="checkbox" name="<?php echo esc_attr( $this->taxonomy ); ?>[]" id="<?php echo esc_attr( $this->taxonomy ); ?>-<?php echo esc_attr( $term->slug ); ?>" value="<?php echo esc_attr( $term->slug ); ?>" <?php checked( $active ); ?> />
+											<label for="<?php echo esc_attr( $this->taxonomy ); ?>-<?php echo esc_attr( $term->slug ); ?>"></label>
+										</th>
+										<td class="column-primary">
+											<strong><?php echo esc_html( $term->name ); ?></strong>
+											<div class="row-actions">
+												<?php echo $this->row_actions($tax, $term ); ?>
+											</div>
+										</td>
+										<td class="column-description"><?php echo ! empty( $term->description ) ? esc_html( $term->description ) : '&#8212;'; ?></td>
+										<td class="column-users"><?php echo esc_html( $term->count ); ?></td>
+									</tr>
 
-								<li>
-									<input type="checkbox" name="<?php echo esc_attr( $this->taxonomy ); ?>[]" id="<?php echo esc_attr( $this->taxonomy ); ?>-<?php echo esc_attr( $term->slug ); ?>" value="<?php echo esc_attr( $term->slug ); ?>" <?php checked( is_object_in_term( $user->ID, $this->taxonomy, $term->slug ) ); ?> />
-									<label for="<?php echo esc_attr( $this->taxonomy ); ?>-<?php echo esc_attr( $term->slug ); ?>"><?php echo esc_html( $term->name ); ?></label>
-								</li>
+								<?php
 
-							<?php endforeach; ?>
+								endforeach;
 
-						</ul>
+							// If there are no user groups
+							else : ?>
 
-					<?php
+								<tr>
+									<td colspan="4">
 
-					// If there are no user groups
-					else :
-						echo esc_html( $tax->labels->not_found );
-					endif;
+										<?php echo esc_html( $tax->labels->not_found ); ?>
 
-				?></td>
+									</td>
+								</tr>
+
+							<?php endif; ?>
+
+						</tbody>
+						<tfoot>
+							<tr>
+								<td class="manage-column column-cb check-column">
+									<label class="screen-reader-text" for="cb-select-all-2"><?php esc_html_e( 'Select All', 'wp-user-groups' ); ?></label>
+									<input id="cb-select-all-2" type="checkbox">
+								</td>
+								<th scope="col" class="manage-column column-name column-primary"><?php esc_html_e( 'Name', 'wp-user-groups' ); ?></th>
+								<th scope="col" class="manage-column column-description"><?php esc_html_e( 'Description', 'wp-user-groups' ); ?></th>
+								<th scope="col" class="manage-column column-users"><?php esc_html_e( 'Users', 'wp-user-groups' ); ?></th>
+							</tr>
+						</tfoot>
+					</table>
+				</td>
 			</tr>
 		</table>
+
 	<?php
+	}
+
+	/**
+	 * Output row actions when editing a user
+	 *
+	 * @since 0.1.1
+	 *
+	 * @param object $term
+	 */
+	protected function row_actions( $tax = array(), $term = false ) {
+		$actions = array();
+
+		// View users
+		if ( current_user_can( 'list_users' ) ) {
+			$args      = array( $tax->name => $term->slug );
+			$users     = admin_url( 'users.php' );
+			$url       = add_query_arg( $args, $users );
+			$actions[] = '<a href="' . esc_url( $url ) . '">' . esc_html__( 'View', 'wp-user-groups' ) . '</a>';
+		}
+
+		// Edit term
+		if ( current_user_can( $tax->cap->assign_terms ) ) {
+			$args      = array( 'action' => 'edit', 'taxonomy' => $tax->name, 'tag_ID' => $term->term_id, 'post_type' => 'post' );
+			$edit_tags = admin_url( 'edit-tags.php' );
+			$url       = add_query_arg( $args, $edit_tags );
+			$actions[] = '<a href="' . esc_url( $url ) . '">' . esc_html__( 'Edit', 'wp-user-groups' ) . '</a>';
+		}
+
+		// Filter
+		$actions = apply_filters( 'wp_user_groups_row_actions', $actions, $tax, $term, $this );
+
+		return implode( ' | ', $actions );
 	}
 
 	/**
@@ -484,6 +731,19 @@ class WP_User_Taxonomy {
 	}
 
 	/** Post Type *************************************************************/
+
+	/**
+	 * Register the taxonomy
+	 *
+	 * @since 0.1.0
+	 */
+	protected function register_user_taxonomy() {
+		register_taxonomy(
+			$this->taxonomy,
+			'user',
+			$this->parse_options()
+		);
+	}
 
 	/**
 	 * Parse taxonomy labels
@@ -536,28 +796,15 @@ class WP_User_Taxonomy {
 				'hierarchical' => true
 			),
 			'capabilities' => array(
-				'manage_terms' => 'edit_users',
-				'edit_terms'   => 'edit_users',
-				'delete_terms' => 'edit_users',
+				'manage_terms' => 'list_users',
+				'edit_terms'   => 'list_users',
+				'delete_terms' => 'list_users',
 				'assign_terms' => 'read',
 			),
 
 			// @see _update_post_term_count()
 			'update_count_callback' => array( $this, 'update_term_user_count' )
 		) );
-	}
-
-	/**
-	 * Register the taxonomy
-	 *
-	 * @since 0.1.0
-	 */
-	public function register_user_taxonomy() {
-		register_taxonomy(
-			$this->taxonomy,
-			'user',
-			$this->parse_options()
-		);
 	}
 
 	/** Bulk Edit *************************************************************/
@@ -641,7 +888,7 @@ class WP_User_Taxonomy {
 	public function bulk_edit( $views = array() ) {
 
 		// Bail if user cannot edit other users
-		if ( ! current_user_can( 'edit_users' ) ) {
+		if ( ! current_user_can( 'list_users' ) ) {
 			return $views;
 		}
 
@@ -653,7 +900,7 @@ class WP_User_Taxonomy {
 
 		<form method="post" class="user-tax-form">
 			<fieldset class="alignleft">
-				<legend class="screen-reader-text"><?php esc_html_e( 'Update Groups', 'wp-user-terms' ); ?></legend>
+				<legend class="screen-reader-text"><?php esc_html_e( 'Update Groups', 'wp-user-groups' ); ?></legend>
 
 				<input name="<?php echo esc_attr( $this->taxonomy ); ?>-users" value="" type="hidden" id="<?php echo esc_attr( $this->taxonomy ); ?>-bulk-users" />
 
