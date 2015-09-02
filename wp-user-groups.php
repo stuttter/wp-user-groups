@@ -5,7 +5,7 @@
  * Plugin URI:  https://wordpress.org/plugins/wp-user-groups/
  * Description: Group users together with taxonomies & terms.
  * Author:      John James Jacoby
- * Version:     0.1.1
+ * Version:     0.1.2
  * Author URI:  https://profiles.wordpress.org/johnjamesjacoby/
  * License:     GPL v2 or later
  */
@@ -25,13 +25,13 @@ defined( 'ABSPATH' ) || exit;
 function wp_register_default_user_taxonomies() {
 
 	// "Groups" taxonomy
-	new WP_User_Taxonomy( 'group', 'users/group', array(
+	new WP_User_Taxonomy( 'user-group', 'users/group', array(
 		'singular' => __( 'Group',  'wp-user-groups' ),
 		'plural'   => __( 'Groups', 'wp-user-groups' )
 	) );
 
 	// "Types" taxonomy
-	new WP_User_Taxonomy( 'type',  'users/type',  array(
+	new WP_User_Taxonomy( 'user-type',  'users/type',  array(
 		'singular' => __( 'Type',  'wp-user-groups' ),
 		'plural'   => __( 'Types', 'wp-user-groups' )
 	) );
