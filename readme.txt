@@ -1,5 +1,5 @@
 === WP User Groups ===
-Contributors: johnjamesjacoby
+Contributors: johnjamesjacoby, stuttter
 Tags: taxonomy, term, users, groups, types
 Requires at least: 4.3
 Tested up to: 4.3
