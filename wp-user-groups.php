@@ -5,7 +5,7 @@
  * Plugin URI:  https://wordpress.org/plugins/wp-user-groups/
  * Description: Group users together with taxonomies & terms.
  * Author:      John James Jacoby
- * Version:     0.1.2
+ * Version:     0.1.3
  * Author URI:  https://profiles.wordpress.org/johnjamesjacoby/
  * License:     GPL v2 or later
  */
@@ -475,36 +475,14 @@ class WP_User_Taxonomy {
 	 * @param int $user_id
 	 */
 	public function update_term_user_count( $terms = array(), $taxonomy = '' ) {
-		global $wpdb;
 
 		// Fallback to this taxonomy
 		if ( empty( $taxonomy ) ) {
 			$taxonomy = $this->taxonomy;
 		}
 
-		// Loop through terms and update individual counts
-		foreach ( (array) $terms as $term ) {
-
-			// Get the count
-			$sql     = "SELECT COUNT(*) FROM {$wpdb->term_relationships} WHERE term_taxonomy_id = %d";
-			$prepare = $wpdb->prepare( $sql, $term );
-			$count   = $wpdb->get_var( $prepare );
-
-			// Core action
-			do_action( 'edit_term_taxonomy', $term, $taxonomy );
-
-			// Update the DB
-			$wpdb->update(
-				$wpdb->term_taxonomy,
-				compact( 'count' ),
-				array(
-					'term_taxonomy_id' => $term
-				)
-			);
-
-			// Core action
-			do_action( 'edited_term_taxonomy', $term, $taxonomy );
-		}
+		// Update counts
+		_update_generic_term_count( $terms, $taxonomy );
 	}
 
 	/**
