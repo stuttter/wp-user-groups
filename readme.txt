@@ -1,22 +1,29 @@
 === WP User Groups ===
 Contributors: johnjamesjacoby, stuttter
-Tags: taxonomy, term, users, groups, types
+Tags: taxonomy, term, user, group, type
 Requires at least: 4.3
 Tested up to: 4.3
-Stable tag: 0.1.2
+Stable tag: 0.1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
 
-Group users together with taxonomies & terms.
-
 WP User Groups allows users to be categorized using custom taxonomies & terms.
+
+* "Groups" & "Types" are created by default, and can be overridden
+* More user group types can be registered with custom arguments
+* Edit users and set their relationships
+* Bulk edit many users to quickly assign several at once
+* Filter the users list to see which users are in what groups
+* Not destructive data storage (plugin can be enabled & disabled without damage)
+* Works great with all WP Term Meta plugins (see below)
 
 Also checkout:
 
 * [WP Term Meta](https://wordpress.org/plugins/wp-term-meta/ "Sort taxonomy terms, your way.")
 * [WP Term Order](https://wordpress.org/plugins/wp-term-order/ "Sort taxonomy terms, your way.")
+* [WP Term Authors](https://wordpress.org/plugins/wp-term-authors/ "Authors for categories, tags, and other taxonomy terms.")
 * [WP Term Colors](https://wordpress.org/plugins/wp-term-colors/ "Pretty colors for categories, tags, and other taxonomy terms.")
 * [WP Term Icons](https://wordpress.org/plugins/wp-term-icons/ "Pretty icons for categories, tags, and other taxonomy terms.")
 * [WP Term Visibility](https://wordpress.org/plugins/wp-term-visibility/ "Visibilities for categories, tags, and other taxonomy terms.")
@@ -24,7 +31,12 @@ Also checkout:
 
 == Screenshots ==
 
-1. User Groups & Types
+1. Menu Items
+2. Groups Taxonomy
+3. Types Taxonomy
+4. User Edit & Assignment
+5. Users List
+6. Users List (Filtered)
 
 == Installation ==
 
@@ -49,13 +61,18 @@ No. This is best left to plugins that choose to integrate with this plugin.
 
 = Where can I get support? =
 
-The WordPress support forums: https://wordpress.org/tags/wp-user-groups/
+The WordPress support forums: https://wordpress.org/plugin/support/wp-user-groups/
 
 = Where can I find documentation? =
 
 http://github.com/johnjamesjacoby/wp-user-groups/
 
 == Changelog ==
+
+= 0.1.4 =
+* Refactor
+* Improve asset management
+* Styling tweaks
 
 = 0.1.2 =
 * Namespace default taxonomy IDs

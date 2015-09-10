@@ -1,8 +1,14 @@
 # WP User Groups
 
-Group users together with taxonomies & terms.
-
 WP User Groups allows users to be categorized using custom taxonomies & terms.
+
+* "Groups" & "Types" are created by default, and can be overridden
+* More user group types can be registered with custom arguments
+* Edit users and set their relationships
+* Bulk edit many users to quickly assign several at once
+* Filter the users list to see which users are in what groups
+* Not destructive data storage (plugin can be enabled & disabled without damage)
+* Works great with all WP Term Meta plugins (see below)
 
 # Installation
 
@@ -27,7 +33,7 @@ No. This is best left to plugins that choose to integrate with this plugin.
 
 ### Where can I get support?
 
-The WordPress support forums: https://wordpress.org/tags/wp-user-groups/
+The WordPress support forums: https://wordpress.org/plugin/support/wp-user-groups/
 
 ### Can I contribute?
 

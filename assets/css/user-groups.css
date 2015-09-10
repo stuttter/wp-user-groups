@@ -1,0 +1,111 @@
+table.user-groups {
+	margin: 0;
+}
+
+table.user-groups .row-actions {
+	visibility: hidden;
+}
+table.user-groups tr:hover .row-actions {
+	visibility: visible;
+}
+table.user-groups thead td.check-column,
+table.user-groups tfoot td.check-column,
+table.user-groups .inactive th.check-column{
+	padding-left: 6px;
+}
+table.user-groups tbody th.check-column,
+table.user-groups tbody {
+	padding: 12px 0 0 2px;
+}
+table.user-groups th,
+table.user-groups td {
+	padding: 10px;
+	vertical-align: top;
+	width: auto;
+	font-weight: normal;
+}
+
+table.user-groups .column-primary {
+	width: 25%;
+}
+
+table.user-groups .column-primary strong {
+	display: block;
+	margin-bottom: .2em;
+	font-size: 14px;
+}
+
+table.user-groups .column-users {
+	width: 10%;
+	padding-right: 0;
+	text-align: center;
+}
+
+table.user-groups .description {
+	color: #666;
+}
+
+table.user-groups .inactive td,
+table.user-groups .inactive th,
+table.user-groups .active td,
+table.user-groups .active th {
+	padding: 10px 9px;
+}
+
+table.user-groups .active td,
+table.user-groups .active th {
+	background-color: #f7fcfe;
+}
+
+table.user-groups .inactive td,
+table.user-groups .inactive th,
+table.user-groups .active td,
+table.user-groups .active th {
+	-webkit-box-shadow: inset 0 -1px 0 rgba(0,0,0,0.1);
+	box-shadow: inset 0 -1px 0 rgba(0,0,0,0.1);
+}
+
+table.user-groups tr.active + tr.inactive th,
+table.user-groups tr.active + tr.inactive td {
+	border-top: 1px solid rgba(0,0,0,0.03);
+	-webkit-box-shadow: inset 0 1px 0 rgba(0,0,0,0.02), inset 0 -1px 0 #e1e1e1;
+	box-shadow: inset 0 1px 0 rgba(0,0,0,0.02), inset 0 -1px 0 #e1e1e1;
+}
+
+table.user-groups tr.active + tr.inactive.update th,
+table.user-groups tr.active + tr.inactive.update td,
+table.user-groups tr.active + tr.inactive.updated th,
+table.user-groups tr.active + tr.inactive.updated td,
+table.user-groups tbody tr:last-of-type td,
+table.user-groups tbody tr:last-of-type th {
+	-webkit-box-shadow: none;
+	box-shadow: none;
+}
+
+table.user-groups .active th.check-column {
+	border-left: 4px solid #00a0d2;
+}
+
+table.user-groups .plugin-title,
+table.user-groups .theme-title {
+	padding-right: 12px;
+	white-space:nowrap;
+}
+
+table.user-groups .inactive .plugin-title strong {
+	font-weight: 400;
+}
+
+.column-users {
+	width: 10%;
+	text-align: center;
+}
+.user-tax-form fieldset {
+	margin: 8px 10px 0 0;
+}
+.subsubsub + form + br.clear {
+	display: none;
+}
+.tax-actions {
+	margin-bottom: 5px;
+}
