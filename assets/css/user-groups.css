@@ -109,3 +109,19 @@ table.user-groups .inactive .plugin-title strong {
 .tax-actions {
 	margin-bottom: 5px;
 }
+
+@media screen and ( max-width: 786px ) {
+	table.form-table table th {
+		display: table-cell;
+	}
+	
+	table.form-table table td {
+		display: table-cell !important;
+	}
+}
+
+@media screen and ( min-width: 1110px ) {
+	table.user-groups {
+		min-width: 650px;
+	}
+}

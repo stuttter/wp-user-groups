@@ -51,5 +51,5 @@ function wp_user_groups_get_plugin_url() {
  * @return int
  */
 function wp_user_groups_get_asset_version() {
-	return 201509100001;
+	return 201509250001;
 }
