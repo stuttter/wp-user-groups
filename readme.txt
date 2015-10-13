@@ -2,8 +2,8 @@
 Contributors: johnjamesjacoby, stuttter
 Tags: taxonomy, term, user, group, type
 Requires at least: 4.3
-Tested up to: 4.3
-Stable tag: 0.1.4
+Tested up to: 4.4
+Stable tag: 0.1.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,7 @@ Also checkout:
 * [WP Term Icons](https://wordpress.org/plugins/wp-term-icons/ "Pretty icons for categories, tags, and other taxonomy terms.")
 * [WP Term Visibility](https://wordpress.org/plugins/wp-term-visibility/ "Visibilities for categories, tags, and other taxonomy terms.")
 * [WP Event Calendar](https://wordpress.org/plugins/wp-event-calendar/ "Flexible events, with a calendar view.")
+* [WP User Activity](https://wordpress.org/plugins/wp-user-activity/ "The best way to log activity in WordPress.")
 
 == Screenshots ==
 
@@ -65,9 +66,13 @@ The WordPress support forums: https://wordpress.org/plugin/support/wp-user-group
 
 = Where can I find documentation? =
 
-http://github.com/johnjamesjacoby/wp-user-groups/
+http://github.com/stuttter/wp-user-groups/
 
 == Changelog ==
+
+= 0.1.5 =
+* Added `user_group` property to taxonomies
+* Added functions for retrieving only user-groups from taxonomies global
 
 = 0.1.4 =
 * Refactor

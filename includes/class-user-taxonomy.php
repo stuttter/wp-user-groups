@@ -542,6 +542,7 @@ class WP_User_Taxonomy {
 	 */
 	protected function parse_options() {
 		return wp_parse_args( $this->args, array(
+			'user_group'   => true, // Custom
 			'hierarchical' => true,
 			'public'       => false,
 			'show_ui'      => true,

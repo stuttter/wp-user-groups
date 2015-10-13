@@ -80,3 +80,48 @@ function wp_set_terms_for_user( $user_id, $taxonomy, $terms = array(), $bulk = f
 	// Clean the cache
 	clean_object_term_cache( $user_id, $taxonomy );
 }
+
+/**
+ * Get all user groups
+ *
+ * @uses get_taxonomies() To get user-group taxonomies
+ *
+ * @since 0.1.5
+ *
+ * @param array  $args     Optional. An array of `key => value` arguments to
+ *                         match against the taxonomy objects. Default empty array.
+ * @param string $output   Optional. The type of output to return in the array.
+ *                         Accepts either taxonomy 'names' or 'objects'. Default 'names'.
+ * @param string $operator Optional. The logical operation to perform.
+ *                         Accepts 'and' or 'or'. 'or' means only one element from
+ *                         the array needs to match; 'and' means all elements must
+ *                         match. Default 'and'.
+ *
+ * @return array A list of taxonomy names or objects.
+ */
+function wp_get_user_groups( $args = array(), $output = 'names', $operator = 'and' ) {
+
+	// Parse arguments
+	$r = wp_parse_args( $args, array(
+		'user_group' => true
+	) );
+
+	// Return user group taxonomies
+	return get_taxonomies( $r, $output, $operator );
+}
+
+/**
+ * Get all user group objects
+ *
+ * @uses wp_get_user_groups() To get user group objects
+ *
+ * @since 0.1.5
+ *
+ * @param  array  $args     See wp_get_user_groups()
+ * @param  string $operator See wp_get_user_groups()
+ *
+ * @return array
+ */
+function wp_get_user_group_objects( $args = array(), $operator = 'and' ) {
+	return wp_get_user_groups( $args, 'objects', $operator );
+}
