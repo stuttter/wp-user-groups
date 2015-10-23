@@ -125,3 +125,14 @@ table.user-groups .inactive .plugin-title strong {
 		min-width: 650px;
 	}
 }
+
+#wp_user_taxonomy_user-group .inside,
+#wp_user_taxonomy_user-type .inside {
+	margin: 0;
+	padding: 0;
+}
+body.users_page_groups .metabox-holder table.user-groups {
+	border: none;
+	margin: 0;
+	padding: 0;
+}

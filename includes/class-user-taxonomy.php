@@ -133,6 +133,9 @@ class WP_User_Taxonomy {
 		add_action( 'show_user_profile', array( $this, 'edit_user_relationships' ), 99 );
 		add_action( 'edit_user_profile', array( $this, 'edit_user_relationships' ), 99 );
 
+		// WP User Profile support
+		add_action( 'add_meta_boxes', array( $this, 'add_meta_box' ) );
+
 		// Cleanup stuff
 		add_action( 'delete_user',   array( $this, 'delete_term_relationships' ) );
 		add_filter( 'sanitize_user', array( $this, 'disable_username'          ) );
@@ -233,6 +236,49 @@ class WP_User_Taxonomy {
 
 		// Add inline style
 		wp_add_inline_style( 'wp_user_groups', $style );
+	}
+
+	/**
+	 * 
+	 * @since 0.1.6
+	 */
+	public function add_meta_box() {
+
+		// Get the taxonomy
+		$tax     = get_taxonomy( $this->taxonomy );
+		$user_id = ! empty( $_GET['user_id'] )
+			? (int) $_GET['user_id']
+			: get_current_user_id();
+
+		// Make sure the user can assign terms of the group taxonomy before proceeding.
+		if ( ! current_user_can( 'edit_user', $user_id ) || ! current_user_can( $tax->cap->assign_terms ) ) {
+			return;
+		}
+
+		// Bail if no UI for taxonomy
+		if ( false === $tax->show_ui ) {
+			return;
+		}
+
+		// Get the terms of the taxonomy.
+		$terms = get_terms( $this->taxonomy, array(
+			'hide_empty' => false
+		) );
+
+		// Maybe add the metabox
+		add_meta_box(
+			'wp_user_taxonomy_' . $this->taxonomy,
+			$tax->label,
+			array( $this, 'user_profile_metabox' ),
+			'users_page_groups',
+			'normal',
+			'default',
+			array(
+				'user_id' => $user_id,
+				'tax'     => $tax,
+				'terms'   => $terms
+			)
+		);
 	}
 
 	/**
@@ -354,75 +400,97 @@ class WP_User_Taxonomy {
 					</label>
 				</th>
 				<td>
-					<table class="wp-list-table widefat fixed striped user-groups">
-						<thead>
-							<tr>
-								<td id="cb" class="manage-column column-cb check-column">
-									<label class="screen-reader-text" for="cb-select-all-1"><?php esc_html_e( 'Select All', 'wp-user-groups' ); ?></label>
-									<input id="cb-select-all-1" type="checkbox">
-								</td>
-								<th scope="col" class="manage-column column-name column-primary"><?php esc_html_e( 'Name', 'wp-user-groups' ); ?></th>
-								<th scope="col" class="manage-column column-description"><?php esc_html_e( 'Description', 'wp-user-groups' ); ?></th>
-								<th scope="col" class="manage-column column-users"><?php esc_html_e( 'Users', 'wp-user-groups' ); ?></th>
-							</tr>
-						</thead>
-						<tbody>
-
-							<?php if ( ! empty( $terms ) ) :
-
-								foreach ( $terms as $term ) :
-									$active = is_object_in_term( $user->ID, $this->taxonomy, $term->slug ); ?>
-
-									<tr class="<?php echo ( true === $active ) ? 'active' : 'inactive'; ?>">
-										<th scope="row" class="check-column">
-											<input type="checkbox" name="<?php echo esc_attr( $this->taxonomy ); ?>[]" id="<?php echo esc_attr( $this->taxonomy ); ?>-<?php echo esc_attr( $term->slug ); ?>" value="<?php echo esc_attr( $term->slug ); ?>" <?php checked( $active ); ?> />
-											<label for="<?php echo esc_attr( $this->taxonomy ); ?>-<?php echo esc_attr( $term->slug ); ?>"></label>
-										</th>
-										<td class="column-primary">
-											<strong><?php echo esc_html( $term->name ); ?></strong>
-											<div class="row-actions">
-												<?php echo $this->row_actions($tax, $term ); ?>
-											</div>
-										</td>
-										<td class="column-description"><?php echo ! empty( $term->description ) ? esc_html( $term->description ) : '&#8212;'; ?></td>
-										<td class="column-users"><?php echo esc_html( $term->count ); ?></td>
-									</tr>
-
-								<?php
-
-								endforeach;
-
-							// If there are no user groups
-							else : ?>
-
-								<tr>
-									<td colspan="4">
-
-										<?php echo esc_html( $tax->labels->not_found ); ?>
-
-									</td>
-								</tr>
-
-							<?php endif; ?>
-
-						</tbody>
-						<tfoot>
-							<tr>
-								<td class="manage-column column-cb check-column">
-									<label class="screen-reader-text" for="cb-select-all-2"><?php esc_html_e( 'Select All', 'wp-user-groups' ); ?></label>
-									<input id="cb-select-all-2" type="checkbox">
-								</td>
-								<th scope="col" class="manage-column column-name column-primary"><?php esc_html_e( 'Name', 'wp-user-groups' ); ?></th>
-								<th scope="col" class="manage-column column-description"><?php esc_html_e( 'Description', 'wp-user-groups' ); ?></th>
-								<th scope="col" class="manage-column column-users"><?php esc_html_e( 'Users', 'wp-user-groups' ); ?></th>
-							</tr>
-						</tfoot>
-					</table>
+					<?php $this->table_contents( $user, $tax, $terms ); ?>
 				</td>
 			</tr>
 		</table>
 
 	<?php
+	}
+
+	/**
+	 * Output metabox for user profiles
+	 *
+	 * @since 0.1.6
+	 */
+	public function user_profile_metabox( $user = null, $args = array() ) {
+		$this->table_contents( $user, $args['args']['tax'], $args['args']['terms'] );
+	}
+
+	/**
+	 * Output metabox contents
+	 *
+	 * @since 0.1.6
+	 */
+	protected function table_contents( $user, $tax, $terms ) {
+		?>
+
+		<table class="wp-list-table widefat fixed striped user-groups">
+			<thead>
+				<tr>
+					<td id="cb" class="manage-column column-cb check-column">
+						<label class="screen-reader-text" for="cb-select-all-1"><?php esc_html_e( 'Select All', 'wp-user-groups' ); ?></label>
+						<input id="cb-select-all-1" type="checkbox">
+					</td>
+					<th scope="col" class="manage-column column-name column-primary"><?php esc_html_e( 'Name', 'wp-user-groups' ); ?></th>
+					<th scope="col" class="manage-column column-description"><?php esc_html_e( 'Description', 'wp-user-groups' ); ?></th>
+					<th scope="col" class="manage-column column-users"><?php esc_html_e( 'Users', 'wp-user-groups' ); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+
+				<?php if ( ! empty( $terms ) ) :
+
+					foreach ( $terms as $term ) :
+						$active = is_object_in_term( $user->ID, $this->taxonomy, $term->slug ); ?>
+
+						<tr class="<?php echo ( true === $active ) ? 'active' : 'inactive'; ?>">
+							<th scope="row" class="check-column">
+								<input type="checkbox" name="<?php echo esc_attr( $this->taxonomy ); ?>[]" id="<?php echo esc_attr( $this->taxonomy ); ?>-<?php echo esc_attr( $term->slug ); ?>" value="<?php echo esc_attr( $term->slug ); ?>" <?php checked( $active ); ?> />
+								<label for="<?php echo esc_attr( $this->taxonomy ); ?>-<?php echo esc_attr( $term->slug ); ?>"></label>
+							</th>
+							<td class="column-primary">
+								<strong><?php echo esc_html( $term->name ); ?></strong>
+								<div class="row-actions">
+									<?php echo $this->row_actions( $tax, $term ); ?>
+								</div>
+							</td>
+							<td class="column-description"><?php echo ! empty( $term->description ) ? esc_html( $term->description ) : '&#8212;'; ?></td>
+							<td class="column-users"><?php echo esc_html( $term->count ); ?></td>
+						</tr>
+
+					<?php
+
+					endforeach;
+
+				// If there are no user groups
+				else : ?>
+
+					<tr>
+						<td colspan="4">
+
+							<?php echo esc_html( $tax->labels->not_found ); ?>
+
+						</td>
+					</tr>
+
+				<?php endif; ?>
+
+			</tbody>
+			<tfoot>
+				<tr>
+					<td class="manage-column column-cb check-column">
+						<label class="screen-reader-text" for="cb-select-all-2"><?php esc_html_e( 'Select All', 'wp-user-groups' ); ?></label>
+						<input id="cb-select-all-2" type="checkbox">
+					</td>
+					<th scope="col" class="manage-column column-name column-primary"><?php esc_html_e( 'Name', 'wp-user-groups' ); ?></th>
+					<th scope="col" class="manage-column column-description"><?php esc_html_e( 'Description', 'wp-user-groups' ); ?></th>
+					<th scope="col" class="manage-column column-users"><?php esc_html_e( 'Users', 'wp-user-groups' ); ?></th>
+				</tr>
+			</tfoot>
+		</table>
+
+		<?php
 	}
 
 	/**

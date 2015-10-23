@@ -3,7 +3,7 @@ Contributors: johnjamesjacoby, stuttter
 Tags: taxonomy, term, user, group, type
 Requires at least: 4.3
 Tested up to: 4.4
-Stable tag: 0.1.5
+Stable tag: 0.1.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -71,6 +71,9 @@ The WordPress support forums: https://wordpress.org/plugin/support/wp-user-group
 http://github.com/stuttter/wp-user-groups/
 
 == Changelog ==
+
+= 0.1.6 =
+* Add support for WP User Profiles
 
 = 0.1.5 =
 * Added `user_group` property to taxonomies
