@@ -813,19 +813,19 @@ class WP_User_Taxonomy {
 
 			<div id="<?php echo esc_attr( $this->taxonomy ); ?>-header">
 				<h1>
-					<?php esc_html_e( 'Users', 'wp-user-taxonomies' ); ?>
+					<?php esc_html_e( 'Users', 'wp-user-groups' ); ?>
 
 					<?php if ( current_user_can( 'create_users' ) ) : ?>
 
-						<a href="<?php echo esc_url( admin_url( 'user-new.php' ) ); ?>" class="page-title-action"><?php echo esc_html_x( 'Add New', 'user', 'wp-user-taxonomies' ); ?></a>
+						<a href="<?php echo esc_url( admin_url( 'user-new.php' ) ); ?>" class="page-title-action"><?php echo esc_html_x( 'Add New', 'user', 'wp-user-groups' ); ?></a>
 
 					<?php elseif ( is_multisite() && current_user_can( 'promote_users' ) ) : ?>
 
-						<a href="<?php echo esc_url( admin_url( 'user-new.php' ) ); ?>" class="page-title-action"><?php echo esc_html_x( 'Add Existing', 'user', 'wp-user-taxonomies' ); ?></a>
+						<a href="<?php echo esc_url( admin_url( 'user-new.php' ) ); ?>" class="page-title-action"><?php echo esc_html_x( 'Add Existing', 'user', 'wp-user-groups' ); ?></a>
 
 					<?php endif; ?>
 
-					<span class="subtitle"><?php printf( esc_html__( 'Viewing users of %s: %s', 'wp-user-taxonomies' ), $this->tax_singular_low, '<a href="' . esc_url( $url ) . '">' . $terms[ $viewing ]->name . '</a>' ); ?></span>
+					<span class="subtitle"><?php printf( esc_html__( 'Viewing users of %s: %s', 'wp-user-groups' ), $this->tax_singular_low, '<a href="' . esc_url( $url ) . '">' . $terms[ $viewing ]->name . '</a>' ); ?></span>
 				</h1>
 				<?php echo wpautop( $terms[ $viewing ]->description ); ?>
 			</div>
