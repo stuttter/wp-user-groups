@@ -15,7 +15,10 @@ defined( 'ABSPATH' ) || exit;
  * @since 0.1.4
  */
 function wp_user_groups_admin_assets() {
-	wp_enqueue_style( 'wp_user_groups', wp_user_groups_get_plugin_url() . '/assets/css/user-groups.css', false, wp_user_groups_get_asset_version(), false );
+	$url = wp_user_groups_get_plugin_url();	
+	$ver = wp_user_groups_get_asset_version();
+
+	wp_enqueue_style( 'wp_user_groups', $url. 'assets/css/user-groups.css', false, $ver, false );
 }
 
 
