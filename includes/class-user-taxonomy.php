@@ -3,7 +3,7 @@
 /**
  * User Groups Taxonomy
  *
- * @package UserGroups/Classes/UserTaxonomy
+ * @package Plugins/Users/Groups/Classes/Taxonomy
  */
 
 // Exit if accessed directly

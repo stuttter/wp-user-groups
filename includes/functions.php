@@ -3,7 +3,7 @@
 /**
  * User Groups Functions
  *
- * @package UserGroups/Functions
+ * @package Plugins/Users/Groups/Functions
  */
 
 // Exit if accessed directly

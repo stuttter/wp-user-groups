@@ -3,7 +3,7 @@
 /**
  * User Groups Admin
  *
- * @package UserGroups/Admin
+ * @package Plugins/Users/Groups/Admin
  */
 
 // Exit if accessed directly

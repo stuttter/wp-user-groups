@@ -3,7 +3,7 @@
 /**
  * User Groups Hooks
  *
- * @package UserGroups/Hooks
+ * @package Plugins/Users/Groups/Hooks
  */
 
 // Exit if accessed directly
