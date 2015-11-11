@@ -246,17 +246,15 @@ class WP_User_Taxonomy {
 	public function add_meta_box( $type = '' ) {
 
 		// Bail if no profile sections
-		if ( ! function_exists( 'wp_user_profiles_sections' ) ) {
+		if ( ! function_exists( 'wp_user_profiles_get_section_hooknames' ) ) {
 			return;
 		}
 
 		// Get hookname
-		$file = wp_user_profiles_get_file();
-		$hook = get_plugin_page_hookname( 'groups', $file );
-		_wp_user_profiles_walk_section_hooknames( $hook );
+		$hooks = wp_user_profiles_get_section_hooknames( 'groups' );
 
 		// Bail if not the correct type
-		if ( $type !== $hook ) {
+		if ( ! in_array( $type, $hooks, true ) ) {
 			return;
 		}
 
@@ -286,7 +284,7 @@ class WP_User_Taxonomy {
 			'wp_user_taxonomy_' . $this->taxonomy,
 			$tax->label,
 			array( $this, 'user_profile_metabox' ),
-			$hook,
+			$hooks[0],
 			'normal',
 			'default',
 			array(
