@@ -685,7 +685,7 @@ class WP_User_Taxonomy {
 		$users = array();
 
 		// Get an array of users from the string
-		parse_str( urldecode( $_POST[ $this->taxonomy . '-users'] ), &$users );
+		parse_str( urldecode( $_POST[ $this->taxonomy . '-users'] ), $users );
 
 		// Bail if no users to edit
 		if ( empty( $users['users'] ) ) {
