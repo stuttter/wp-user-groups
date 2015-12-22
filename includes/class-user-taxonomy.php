@@ -303,6 +303,22 @@ class WP_User_Taxonomy {
 	 * @param int $user_id
 	 */
 	public function save_terms_for_user( $user_id = 0 ) {
+
+		// Additional checks if User Profiles is active
+		if ( function_exists( 'wp_user_profiles_get_section_hooknames' ) ) {
+
+			// Bail if no page
+			if ( empty( $_GET['page'] ) ) {
+				return;
+			}
+
+			// Bail if not saving this section
+			if ( sanitize_key( $_GET['page'] ) !== 'groups' ) {
+				return;
+			}
+		}
+
+		// Set terms for user
 		wp_set_terms_for_user( $user_id, $this->taxonomy );
 	}
 
