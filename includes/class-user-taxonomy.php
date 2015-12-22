@@ -134,7 +134,7 @@ class WP_User_Taxonomy {
 		add_action( 'edit_user_profile', array( $this, 'edit_user_relationships' ), 99 );
 
 		// WP User Profile support
-		add_action( 'add_meta_boxes', array( $this, 'add_meta_box' ) );
+		add_action( 'wp_user_profiles_add_meta_boxes', array( $this, 'add_meta_box' ) );
 
 		// Cleanup stuff
 		add_action( 'delete_user',   array( $this, 'delete_term_relationships' ) );
@@ -370,6 +370,8 @@ class WP_User_Taxonomy {
 	 * @param string $term_id
 	 */
 	public function manage_custom_column( $display = false, $column = '', $term_id = 0 ) {
+
+		// Users column gets custom content
 		if ( 'users' === $column ) {
 			$term  = get_term( $term_id, $this->taxonomy );
 			$args  = array( $this->taxonomy => $term->slug );
@@ -679,8 +681,11 @@ class WP_User_Taxonomy {
 
 		check_admin_referer( "bulk-edit-{$this->taxonomy}" );
 
+		// Setup the empty users array
+		$users = array();
+
 		// Get an array of users from the string
-		parse_str( urldecode( $_POST[ $this->taxonomy . '-users'] ), $users );
+		parse_str( urldecode( $_POST[ $this->taxonomy . '-users'] ), &$users );
 
 		// Bail if no users to edit
 		if ( empty( $users['users'] ) ) {
