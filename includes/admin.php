@@ -36,9 +36,10 @@ function wp_user_groups_add_profile_section( $sections = array() ) {
 
 	// Add the "Activity" section
 	$new_sections['groups'] = array(
+		'id'    => 'groups',
 		'slug'  => 'groups',
 		'name'  => esc_html__( 'Groups', 'wp-user-activity' ),
-		'cap'   => 'edit_user',
+		'cap'   => 'edit_profile',
 		'icon'  => 'dashicons-groups',
 		'order' => 90
 	);
