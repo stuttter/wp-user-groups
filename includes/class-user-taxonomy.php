@@ -134,7 +134,7 @@ class WP_User_Taxonomy {
 		add_action( 'edit_user_profile', array( $this, 'edit_user_relationships' ), 99 );
 
 		// WP User Profile support
-		add_action( 'wp_user_profiles_add_meta_boxes', array( $this, 'add_meta_box' ) );
+		add_action( 'wp_user_profiles_add_meta_boxes', array( $this, 'add_meta_box' ), 10, 2 );
 
 		// Cleanup stuff
 		add_action( 'delete_user',   array( $this, 'delete_term_relationships' ) );
