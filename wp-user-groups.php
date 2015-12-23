@@ -6,7 +6,7 @@
  * Author:      John James Jacoby
  * Author URI:  https://profiles.wordpress.org/johnjamesjacoby/
  * Description: Group users together with taxonomies & terms.
- * Version:     0.1.9
+ * Version:     0.2.0
  * Text Domain: wp-user-groups
  * Domain Path: /assets/lang/
  * License:     GPL v2 or later
@@ -54,5 +54,5 @@ function wp_user_groups_get_plugin_url() {
  * @return int
  */
 function wp_user_groups_get_asset_version() {
-	return 201512210001;
+	return 201512230001;
 }
