@@ -117,6 +117,9 @@ class WP_User_Taxonomy {
 		add_action( 'admin_head', array( $this, 'admin_head'     ) );
 		add_action( 'admin_menu', array( $this, 'add_admin_page' ) );
 
+		// WP User Profile support
+		add_action( 'wp_user_profiles_add_meta_boxes', array( $this, 'add_meta_box' ), 10, 2 );
+
 		// Taxonomy columns
 		add_action( "manage_{$this->taxonomy}_custom_column", array( $this, 'manage_custom_column'     ), 10, 3 );
 		add_filter( "manage_edit-{$this->taxonomy}_columns",  array( $this, 'manage_edit_users_column' ) );
@@ -132,9 +135,6 @@ class WP_User_Taxonomy {
 		// Add section to the edit user page in the admin to select group
 		add_action( 'show_user_profile', array( $this, 'edit_user_relationships' ), 99 );
 		add_action( 'edit_user_profile', array( $this, 'edit_user_relationships' ), 99 );
-
-		// WP User Profile support
-		add_action( 'wp_user_profiles_add_meta_boxes', array( $this, 'add_meta_box' ), 10, 2 );
 
 		// Cleanup stuff
 		add_action( 'delete_user',   array( $this, 'delete_term_relationships' ) );
