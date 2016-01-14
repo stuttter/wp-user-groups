@@ -738,7 +738,7 @@ class WP_User_Taxonomy {
 			'hide_empty' => false
 		) ); ?>
 
-		<form method="post" class="user-tax-form">
+		<form method="post" class="user-tax-form user-tax-form-<?php echo esc_attr( $this->taxonomy ); ?>">
 			<fieldset class="alignleft">
 				<legend class="screen-reader-text"><?php esc_html_e( 'Update Groups', 'wp-user-groups' ); ?></legend>
 
