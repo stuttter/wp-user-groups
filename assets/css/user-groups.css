@@ -107,7 +107,7 @@ table.user-groups .inactive .plugin-title strong {
 }
 
 @media screen and ( min-width: 786px ) {
-	.column-users {
+	.wp-list-table.tags .column-users {
 		width: 10%;
 		text-align: center;
 	}
