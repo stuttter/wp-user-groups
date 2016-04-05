@@ -170,6 +170,7 @@ class WP_User_Taxonomy {
 		// Hook into early actions to load custom CSS and our init handler.
 		add_action( 'load-users.php',     array( $this, 'admin_load' ) );
 		add_action( 'load-edit-tags.php', array( $this, 'admin_load' ) );
+		add_action( 'load-term.php',      array( $this, 'admin_menu_highlight' ) );
 		add_action( 'load-edit-tags.php', array( $this, 'admin_menu_highlight' ) );
 	}
 
