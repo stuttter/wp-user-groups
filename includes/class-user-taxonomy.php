@@ -885,22 +885,27 @@ class WP_User_Taxonomy {
 			return;
 		}
 
-		if ( ! empty( $_GET[ $this->taxonomy ] ) ) {
-
-			// Sanitize taxonomies
-			$groups = array_map( 'sanitize_key', explode( ',', $_GET[ $this->taxonomy ] ) );
-			$ids    = array();
-
-			// Get terms
-			foreach ( $groups as $group ) {
-				$term     = get_term_by( 'slug', $group, $this->taxonomy );
-				$user_ids = get_objects_in_term( $term->term_id, $this->taxonomy );
-				$ids      = array_merge( $user_ids, $ids );
-			}
-
-			// Set IDs to be included
-			$user_query->query_vars['include'] = $user_ids;
+		// Bail if not looking at taxonomy
+		if ( empty( $_GET[ $this->taxonomy ] ) ) {
+			return;
 		}
+
+		// Sanitize taxonomies
+		$groups = array_map( 'sanitize_key', explode( ',', $_GET[ $this->taxonomy ] ) );
+
+		// Get terms
+		foreach ( $groups as $group ) {
+			$term     = get_term_by( 'slug', $group, $this->taxonomy );
+			$user_ids = get_objects_in_term( $term->term_id, $this->taxonomy );
+		}
+
+		// If no users are in this group, pass a 0 user ID
+		if ( empty( $user_ids ) ) {
+			$user_ids = array( 0 );
+		}
+
+		// Set IDs to be included
+		$user_query->query_vars['include'] = $user_ids;
 	}
 
 	/**
