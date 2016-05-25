@@ -125,3 +125,33 @@ function wp_get_user_groups( $args = array(), $output = 'names', $operator = 'an
 function wp_get_user_group_objects( $args = array(), $operator = 'and' ) {
 	return wp_get_user_groups( $args, 'objects', $operator );
 }
+
+/**
+ * Return a list of users in a specific group
+ *
+ * @since 0.1.0
+ */
+function wp_get_users_of_group( $args = array() ) {
+
+	// Parse arguments
+	$r = wp_parse_args( $args, array(
+		'taxonomy' => 'user-type',
+		'term'     => '',
+		'term_by'  => 'slug'
+	) );
+
+	// Get user IDs in group
+	$term     = get_term_by( $r['term_by'], $r['term'], $r['taxonomy'] );
+	$user_ids = get_objects_in_term( $term->term_id, $r['taxonomy'] );
+
+	// Bail if no users in this term
+	if ( empty( $term ) || empty( $user_ids ) ) {
+		return array();
+	}
+
+	// Return queried users
+	return get_users( array(
+		'orderby' => 'display_name',
+		'include' => $user_ids,
+	) );
+}
