@@ -8,7 +8,7 @@
  * License:     GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Description: Group users together with taxonomies & terms.
- * Version:     0.2.0
+ * Version:     0.2.1
  * Text Domain: wp-user-groups
  * Domain Path: /assets/lang/
  */

@@ -1,9 +1,9 @@
 === WP User Groups ===
 Contributors: johnjamesjacoby, stuttter
 Tags: taxonomy, term, user, group, type
-Requires at least: 4.4
-Tested up to: 4.4
-Stable tag: 0.2.0
+Requires at least: 4.5
+Tested up to: 4.6
+Stable tag: 0.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9Q4F4EL5YJ62J
@@ -75,6 +75,11 @@ The WordPress support forums: https://wordpress.org/plugin/support/wp-user-group
 http://github.com/stuttter/wp-user-groups/
 
 == Changelog ==
+
+= 0.2.1 =
+* Fix bug with user list
+* Introduce wp_get_users_of_group() helper function
+* Add unique class to administration forms
 
 = 0.2.0 =
 * Support for WP User Profiles 0.2.0
