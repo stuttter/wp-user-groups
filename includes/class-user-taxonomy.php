@@ -212,7 +212,7 @@ class WP_User_Taxonomy {
 
 		// Add a body class for this taxonomy if it's currently selected
 		if ( isset( $_GET[ $this->taxonomy ] ) ) {
-			$classes .= "tax-{$this->taxonomy}";
+			$classes .= " tax-{$this->taxonomy}";
 		}
 
 		// Return maybe modified class
