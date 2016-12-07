@@ -94,6 +94,9 @@ class WP_User_Taxonomy {
 
 		// Hook into actions & filters
 		$this->hooks();
+
+		// JIT
+		do_action( 'wp_user_taxonomy', $this );
 	}
 
 	/**
