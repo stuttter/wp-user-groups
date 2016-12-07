@@ -809,7 +809,7 @@ class WP_User_Taxonomy {
 
 		// Output message
 		?><div id="message" class="updated notice notice-success is-dismissible"><p><?php
-			echo $text;
+			echo esc_html( $text );
 			?><button type="button" class="notice-dismiss"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'wp-user-groups' ); ?></span></button>
 		</p></div><?php
 	}
