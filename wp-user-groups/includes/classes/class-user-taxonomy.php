@@ -106,6 +106,7 @@ class WP_User_Taxonomy {
 		// Bulk edit
 		add_filter( 'admin_notices',             array( $this, 'bulk_notice'         )        );
 		add_filter( 'bulk_actions-users',        array( $this, 'bulk_actions'        )        );
+		add_filter( 'bulk_actions-users',        array( $this, 'bulk_actions_sort'   ), 99    );
 		add_action( 'handle_bulk_actions-users', array( $this, 'handle_bulk_actions' ), 10, 3 );
 
 		// Include users by taxonomy term in users.php
@@ -691,6 +692,40 @@ class WP_User_Taxonomy {
 
 		// Return actions, maybe with our bulks added
 		return $actions;
+	}
+
+	/**
+	 * Group add/remove options together for improved UX
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $actions
+	 */
+	public function bulk_actions_sort( $actions = array() ) {
+
+		// Actions array
+		$old_actions = $add_actions = $rem_actions = array();
+
+		// Loop through and separate out actions
+		foreach ( $actions as $key => $name ) {
+
+			// Add
+			if ( 0 === strpos( $key, 'add-' ) ) {
+				$add_actions[ $key ] = $name;
+
+			// Remove
+			} elseif ( 0 === strpos( $key, 'remove-' ) ) {
+				$rem_actions[ $key ] = $name;
+
+			// Old
+			} else {
+				$old_actions[ $key ] = $name;
+			}
+		}
+
+		$new = array_merge( $old_actions, $add_actions, $rem_actions );
+
+		return $new;
 	}
 
 	/**
