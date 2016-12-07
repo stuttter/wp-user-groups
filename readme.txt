@@ -1,7 +1,7 @@
 === WP User Groups ===
 Contributors: johnjamesjacoby, stuttter
 Tags: taxonomy, term, user, group, type
-Requires at least: 4.5
+Requires at least: 4.7
 Tested up to: 4.7
 Stable tag: 1.0.0
 License: GPLv2 or later
@@ -68,7 +68,8 @@ No. This is best left to plugins that choose to integrate with this plugin.
 
 = Where can I get support? =
 
-The WordPress support forums: https://wordpress.org/plugin/support/wp-user-groups/
+* Basic: https://wordpress.org/support/plugin/wp-user-groups/
+* Priority: https://chat.flox.io/support/channels/wp-user-groups/
 
 = Where can I find documentation? =
 
@@ -76,40 +77,45 @@ http://github.com/stuttter/wp-user-groups/
 
 == Changelog ==
 
-= 0.2.1 =
+= [1.0.0] - 2016/12/07 =
+* WordPress 4.7 compatibility
+* Improved bulk actions (requires WordPress 4.7)
+* Official stable release
+
+= [0.2.1] - 2016/05/25 =
 * Fix bug with user list
 * Introduce wp_get_users_of_group() helper function
 * Add unique class to administration forms
 
-= 0.2.0 =
+= [0.2.0] - 2015/12/23 =
 * Support for WP User Profiles 0.2.0
 
-= 0.1.9 =
+= [0.1.9] - 2015/12/21 =
 * Fix bug with User Profiles integration
 
-= 0.1.8 =
+= [0.1.8] - 2015/11/11 =
 * Support for WP User Profiles 0.1.9
 
-= 0.1.7 =
+= [0.1.7] - 2015/11/09 =
 * Update assets & meta
 
-= 0.1.6 =
+= [0.1.6] - 2015/10/23 =
 * Add support for WP User Profiles
 
-= 0.1.5 =
+= [0.1.5] - 2015/10/13 =
 * Added `user_group` property to taxonomies
 * Added functions for retrieving only user-groups from taxonomies global
 
-= 0.1.4 =
+= [0.1.0] - 2015/09/10 =
 * Refactor
 * Improve asset management
 * Styling tweaks
 
-= 0.1.2 =
+= [0.1.2] - 2015/09/01 =
 * Namespace default taxonomy IDs
 
-= 0.1.1 =
+= [0.1.1] - 2015/08/24 =
 * User profile UI uses a mock list-table
 
-= 0.1.0 =
+= [0.1.0] - 2015/08/19 =
 * Initial release

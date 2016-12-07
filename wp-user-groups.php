@@ -10,7 +10,7 @@
  * Description: Group users together with taxonomies & terms.
  * Version:     1.0.0
  * Text Domain: wp-user-groups
- * Domain Path: /assets/lang/
+ * Domain Path: /wp-user-groups/assets/languages/
  */
 
 // Exit if accessed directly
@@ -56,5 +56,5 @@ function wp_user_groups_get_plugin_url() {
  * @return int
  */
 function wp_user_groups_get_asset_version() {
-	return 2016120870001;
+	return 201612070001;
 }

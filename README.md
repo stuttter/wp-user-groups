@@ -33,7 +33,8 @@ No. This is best left to plugins that choose to integrate with this plugin.
 
 ### Where can I get support?
 
-The WordPress support forums: https://wordpress.org/support/plugin/wp-user-groups
+* Basic: https://wordpress.org/support/plugin/wp-user-groups/
+* Priority: https://chat.flox.io/support/channels/wp-user-groups/
 
 ### Can I contribute?
 
