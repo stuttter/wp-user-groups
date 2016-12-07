@@ -8,7 +8,7 @@
  * License:     GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Description: Group users together with taxonomies & terms.
- * Version:     0.2.1
+ * Version:     1.0.0
  * Text Domain: wp-user-groups
  * Domain Path: /assets/lang/
  */
@@ -24,14 +24,16 @@ defined( 'ABSPATH' ) || exit;
 function _wp_user_groups() {
 
 	// Get the plugin path
-	$plugin_path = plugin_dir_path( __FILE__ );
+	$plugin_path = plugin_dir_path( __FILE__ ) . 'wp-user-groups/';
 
-	// Required files
-	require_once $plugin_path . 'includes/admin.php';
-	require_once $plugin_path . 'includes/class-user-taxonomy.php';
-	require_once $plugin_path . 'includes/functions.php';
-	require_once $plugin_path . 'includes/taxonomies.php';
-	require_once $plugin_path . 'includes/hooks.php';
+	// Classes
+	require_once $plugin_path . 'includes/classes/class-user-taxonomy.php';
+
+	// Functions
+	require_once $plugin_path . 'includes/functions/admin.php';
+	require_once $plugin_path . 'includes/functions/common.php';
+	require_once $plugin_path . 'includes/functions/taxonomies.php';
+	require_once $plugin_path . 'includes/functions/hooks.php';
 }
 add_action( 'plugins_loaded', '_wp_user_groups' );
 
@@ -43,7 +45,7 @@ add_action( 'plugins_loaded', '_wp_user_groups' );
  * @return string
  */
 function wp_user_groups_get_plugin_url() {
-	return plugin_dir_url( __FILE__ );
+	return plugin_dir_url( __FILE__ ) . 'wp-user-groups/';
 }
 
 /**
@@ -54,5 +56,5 @@ function wp_user_groups_get_plugin_url() {
  * @return int
  */
 function wp_user_groups_get_asset_version() {
-	return 201602090002;
+	return 2016120870001;
 }
