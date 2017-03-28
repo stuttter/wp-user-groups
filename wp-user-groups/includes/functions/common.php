@@ -135,7 +135,7 @@ function wp_get_users_of_group( $args = array() ) {
 
 	// Parse arguments
 	$r = wp_parse_args( $args, array(
-		'taxonomy' => 'user-type',
+		'taxonomy' => 'user-group',
 		'term'     => '',
 		'term_by'  => 'slug'
 	) );
