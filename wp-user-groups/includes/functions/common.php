@@ -55,7 +55,7 @@ function wp_set_terms_for_user( $user_id, $taxonomy, $terms = array(), $bulk = f
 	$tax = get_taxonomy( $taxonomy );
 
 	// Make sure the current user can edit the user and assign terms before proceeding.
-	if ( ! current_user_can( 'edit_user', $user_id ) && current_user_can( $tax->cap->assign_terms ) ) {
+	if ( ! current_user_can( 'edit_user', $user_id ) || ! current_user_can( $tax->cap->assign_terms ) ) {
 		return false;
 	}
 
