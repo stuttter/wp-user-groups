@@ -236,7 +236,8 @@ class WP_User_Taxonomy {
 			.column-{$this->taxonomy} {
 				width: 10%;
 			}
-			body.users-php.tax-{$this->taxonomy} .wrap > h1 {
+			body.users-php.tax-{$this->taxonomy} .wrap > h1,
+			body.users-php.tax-{$this->taxonomy} .wrap > h1 + .page-title-action {
 				display: none;
 			}";
 
