@@ -463,8 +463,10 @@ class WP_User_Taxonomy {
 			<thead>
 				<tr>
 					<td id="cb" class="manage-column column-cb check-column">
-						<label class="screen-reader-text" for="cb-select-all-1"><?php esc_html_e( 'Select All', 'wp-user-groups' ); ?></label>
-						<input id="cb-select-all-1" type="checkbox">
+						<?php if ( ! $this->is_exclusive() ) : ?>
+							<label class="screen-reader-text" for="cb-select-all-1"><?php esc_html_e( 'Select All', 'wp-user-groups' ); ?></label>
+							<input id="cb-select-all-1" type="checkbox">
+						<?php endif; ?>
 					</td>
 					<th scope="col" class="manage-column column-name column-primary"><?php esc_html_e( 'Name', 'wp-user-groups' ); ?></th>
 					<th scope="col" class="manage-column column-description"><?php esc_html_e( 'Description', 'wp-user-groups' ); ?></th>
@@ -480,7 +482,7 @@ class WP_User_Taxonomy {
 
 						<tr class="<?php echo ( true === $active ) ? 'active' : 'inactive'; ?>">
 							<th scope="row" class="check-column">
-								<input type="checkbox" name="<?php echo esc_attr( $this->taxonomy ); ?>[]" id="<?php echo esc_attr( $this->taxonomy ); ?>-<?php echo esc_attr( $term->slug ); ?>" value="<?php echo esc_attr( $term->slug ); ?>" <?php checked( $active ); ?> />
+								<input type="<?php echo $this->is_exclusive() ? 'radio' : 'checkbox'; ?>" name="<?php echo esc_attr( $this->taxonomy ); ?>[]" id="<?php echo esc_attr( $this->taxonomy ); ?>-<?php echo esc_attr( $term->slug ); ?>" value="<?php echo esc_attr( $term->slug ); ?>" <?php checked( $active ); ?> />
 								<label for="<?php echo esc_attr( $this->taxonomy ); ?>-<?php echo esc_attr( $term->slug ); ?>"></label>
 							</th>
 							<td class="column-primary">
@@ -514,8 +516,10 @@ class WP_User_Taxonomy {
 			<tfoot>
 				<tr>
 					<td class="manage-column column-cb check-column">
-						<label class="screen-reader-text" for="cb-select-all-2"><?php esc_html_e( 'Select All', 'wp-user-groups' ); ?></label>
-						<input id="cb-select-all-2" type="checkbox">
+						<?php if ( ! $this->is_exclusive() ) : ?>
+							<label class="screen-reader-text" for="cb-select-all-2"><?php esc_html_e( 'Select All', 'wp-user-groups' ); ?></label>
+							<input id="cb-select-all-2" type="checkbox">
+						<?php endif; ?>
 					</td>
 					<th scope="col" class="manage-column column-name column-primary"><?php esc_html_e( 'Name', 'wp-user-groups' ); ?></th>
 					<th scope="col" class="manage-column column-description"><?php esc_html_e( 'Description', 'wp-user-groups' ); ?></th>
@@ -644,7 +648,12 @@ class WP_User_Taxonomy {
 	 */
 	protected function parse_options() {
 		return wp_parse_args( $this->args, array(
-			'user_group'   => true, // Custom
+
+			// Custom
+			'user_group'   => true,  // Make it easy to identify user groups
+			'exclusive'    => false, // Check vs. Radio
+
+			// Core
 			'hierarchical' => true,
 			'public'       => false,
 			'show_ui'      => true,
@@ -730,6 +739,18 @@ class WP_User_Taxonomy {
 		$new = array_merge( $old_actions, $add_actions, $rem_actions );
 
 		return $new;
+	}
+
+	/**
+	 * Is this an exclusive user group type, where a user can only belong to one
+	 * group within the taxonomy?
+	 *
+	 * @since 2.0.0
+	 *
+	 * @return bool
+	 */
+	public function is_exclusive() {
+		return ( true === $this->args['exclusive'] );
 	}
 
 	/**
