@@ -601,9 +601,10 @@ class WP_User_Taxonomy {
 	 * @since 0.1.0
 	 */
 	protected function register_user_taxonomy() {
+		$objects = apply_filters( 'wp_user_groups_taxonomy_objects', 'user', $this->taxonomy, $this->parse_options() );
 		register_taxonomy(
 			$this->taxonomy,
-			'user',
+			$objects,
 			$this->parse_options()
 		);
 	}
