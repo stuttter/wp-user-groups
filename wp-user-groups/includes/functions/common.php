@@ -127,31 +127,46 @@ function wp_get_user_group_objects( $args = array(), $operator = 'and' ) {
 }
 
 /**
- * Return a list of users in a specific group
+ * Return a list of users in a specific group.
  *
  * @since 0.1.0
- */
-function wp_get_users_of_group( $args = array() ) {
 
-	// Parse arguments
+ * @param array $args {
+ *     Array or term information.
+ *
+ *     @type string     $taxomony Taxonomy name. Default is 'user-group'.
+ *     @type string|int $term     Search for this term value.
+ *     @type string     $term_by  Either 'slug', 'name', 'id' (term_id), or 'term_taxonomy_id'.
+ *                                Default is 'slug'.
+ * }
+ * @param array $user_args Optional. WP_User_Query arguments.
+ *
+ * @return array List of users in the user group.
+ */
+function wp_get_users_of_group( $args = array(), $user_args = array() ) {
+
+	// Parse arguments.
 	$r = wp_parse_args( $args, array(
 		'taxonomy' => 'user-group',
 		'term'     => '',
 		'term_by'  => 'slug'
 	) );
 
-	// Get user IDs in group
+	// Get user IDs in group.
 	$term     = get_term_by( $r['term_by'], $r['term'], $r['taxonomy'] );
 	$user_ids = get_objects_in_term( $term->term_id, $r['taxonomy'] );
 
-	// Bail if no users in this term
+	// Bail if no users in this term.
 	if ( empty( $term ) || empty( $user_ids ) ) {
 		return array();
 	}
 
-	// Return queried users
-	return get_users( array(
+	$user_args = wp_parse_args( $user_args, array(
 		'orderby' => 'display_name',
-		'include' => $user_ids,
 	) );
+
+	$user_args['include'] = $user_ids;
+
+	// Return queried users.
+	return get_users( $user_args );
 }
