@@ -138,8 +138,10 @@ class WP_User_Taxonomy {
 		add_action( 'edit_user_profile_update', array( $this, 'save_terms_for_user' ) );
 
 		// Add section to the edit user page in the admin to select group
-		add_action( 'show_user_profile', array( $this, 'edit_user_relationships' ), 99 );
-		add_action( 'edit_user_profile', array( $this, 'edit_user_relationships' ), 99 );
+		if ( ! function_exists( '_wp_user_profiles' ) ) {
+			add_action( 'show_user_profile', array( $this, 'edit_user_relationships' ), 99 );
+			add_action( 'edit_user_profile', array( $this, 'edit_user_relationships' ), 99 );
+		}
 
 		// Cleanup stuff
 		add_action( 'delete_user',   array( $this, 'delete_term_relationships' ) );
