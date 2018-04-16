@@ -308,6 +308,11 @@ class WP_User_Taxonomy {
 	 */
 	public function save_terms_for_user( $user_id = 0 ) {
 
+		// Bail if nonce problem
+		if ( ! $this->verify_nonce() ) {
+			return;
+		}
+
 		// Additional checks if User Profiles is active
 		if ( function_exists( 'wp_user_profiles_get_section_hooknames' ) ) {
 
@@ -531,6 +536,9 @@ class WP_User_Taxonomy {
 		</table>
 
 		<?php
+
+		// Nonce for table fields
+		$this->nonce_field();
 	}
 
 	/**
@@ -761,6 +769,11 @@ class WP_User_Taxonomy {
 	 * @since 1.0.0
 	 */
 	public function handle_bulk_actions( $redirect_to = '', $action = '', $user_ids = array() ) {
+
+		// Bail if nonce fails
+		if ( ! $this->verify_nonce() ) {
+			return $redirect_to;
+		}
 
 		// Get terms
 		$terms = get_terms( $this->taxonomy, array(
@@ -1077,6 +1090,53 @@ class WP_User_Taxonomy {
 
 		// Return columns
 		return $defaults;
+	}
+
+	/** Nonce *****************************************************************/
+
+	/**
+	 * Return the concatenated nonce key
+	 *
+	 * @since 2.1.0
+	 *
+	 * @return string
+	 */
+	private function get_nonce_key() {
+		return "wp_user_taxonomy_{$this->taxonomy}";
+	}
+
+	/**
+	 * Output the nonce field for this user taxonomy table
+	 *
+	 * @since 2.1.0
+	 */
+	private function nonce_field() {
+		wp_nonce_field( $this->taxonomy, $this->get_nonce_key() );
+	}
+
+	/**
+	 * Try to verify the nonce for this use taxonomy
+	 *
+	 * @since 2.1.0
+	 *
+	 * @return boolean
+	 */
+	private function verify_nonce() {
+
+		// Nonce exists?
+		$retval = false;
+		$key    = $this->get_nonce_key();
+		$nonce  = isset( $_REQUEST[ $key ] )
+			? $_REQUEST[ $key ]
+			: $retval;
+
+		// Return true if nonce was verified
+		if ( ! empty( $nonce ) && wp_verify_nonce( $nonce, $this->taxonomy ) ) {
+			$retval = true;
+		}
+
+		// Default return value
+		return $retval;
 	}
 }
 endif;
