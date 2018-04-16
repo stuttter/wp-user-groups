@@ -752,7 +752,7 @@ class WP_User_Taxonomy {
 	 * @return bool
 	 */
 	public function is_exclusive() {
-		return ( true === $this->args['exclusive'] );
+		return ! empty( $this->args['exclusive'] );
 	}
 
 	/**
