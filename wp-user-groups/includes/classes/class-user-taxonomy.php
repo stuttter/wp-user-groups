@@ -269,7 +269,7 @@ class WP_User_Taxonomy {
 			: get_current_user_id();
 
 		// Make sure the user can assign terms of the group taxonomy before proceeding.
-		if ( ! current_user_can( 'edit_user', $user_id ) || ! current_user_can( $tax->cap->assign_terms ) ) {
+		if ( ! current_user_can( 'edit_users', $user_id ) || ! current_user_can( $tax->cap->assign_terms ) ) {
 			return;
 		}
 
@@ -403,7 +403,7 @@ class WP_User_Taxonomy {
 		$tax = get_taxonomy( $this->taxonomy );
 
 		// Make sure the user can assign terms of the group taxonomy before proceeding.
-		if ( ! current_user_can( 'edit_user', $user->ID ) || ! current_user_can( $tax->cap->assign_terms ) ) {
+		if ( ! current_user_can( 'edit_users', $user->ID ) || ! current_user_can( $tax->cap->assign_terms ) ) {
 			return;
 		}
 
