@@ -3,7 +3,7 @@ Contributors: johnjamesjacoby, stuttter
 Tags: taxonomy, term, user, group, type
 Requires at least: 4.7
 Tested up to: 4.9
-Stable tag: 2.1.1
+Stable tag: 2.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9Q4F4EL5YJ62J
@@ -26,7 +26,6 @@ WP User Groups allows users to be categorized using custom taxonomies & terms.
 * [WP Pretty Filters](https://wordpress.org/plugins/wp-pretty-filters/ "Makes post filters better match what's already in Media & Attachments.")
 * [WP Event Calendar](https://wordpress.org/plugins/wp-event-calendar/ "The best way to manage events in WordPress.")
 * [WP Media Categories](https://wordpress.org/plugins/wp-media-categories/ "Add categories to media & attachments.")
-* [WP Term Meta](https://wordpress.org/plugins/wp-term-meta/ "Sort taxonomy terms, your way.")
 * [WP Term Order](https://wordpress.org/plugins/wp-term-order/ "Sort taxonomy terms, your way.")
 * [WP Term Authors](https://wordpress.org/plugins/wp-term-authors/ "Authors for categories, tags, and other taxonomy terms.")
 * [WP Term Colors](https://wordpress.org/plugins/wp-term-colors/ "Pretty colors for categories, tags, and other taxonomy terms.")
@@ -77,8 +76,11 @@ http://github.com/stuttter/wp-user-groups/
 
 == Changelog ==
 
+= [2.2.0] - 2018/06/05 =
+* Add "Managed" taxonomy type, so users cannot assign their own groups
+
 = [2.1.0] - 2018/04/16 =
-* Add a dedicated nonce for each user taxonomy (thanks Tom Dxw!)
+* Add a dedicated nonce for each user taxonomy (thanks Tom Adams!)
 
 = [2.0.0] - 2017/10/24 =
 * Fix bug with user filtering

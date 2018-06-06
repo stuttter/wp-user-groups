@@ -35,7 +35,7 @@ function wp_register_default_user_group_taxonomy() {
  * @since 0.1.4
  */
 function wp_register_default_user_type_taxonomy() {
-	new WP_User_Taxonomy( 'user-type',  'users/type',  array(
+	new WP_User_Taxonomy( 'user-type',  'users/type', array(
 		'singular' => __( 'Type',  'wp-user-groups' ),
 		'plural'   => __( 'Types', 'wp-user-groups' )
 	) );

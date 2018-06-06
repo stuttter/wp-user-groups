@@ -59,6 +59,15 @@ class WP_User_Taxonomy {
 	public $labels = array();
 
 	/**
+	 * Array of taxonomy capabilities, if you'd like to customize them completely
+	 *
+	 * @since 2.2.0
+	 *
+	 * @var array
+	 */
+	public $caps = array();
+
+	/**
 	 * Main constructor
 	 *
 	 * @since 0.1.0
@@ -67,8 +76,9 @@ class WP_User_Taxonomy {
 	 * @param  string  $slug
 	 * @param  array   $args
 	 * @param  array   $labels
+	 * @param  array   $caps
 	 */
-	public function __construct( $taxonomy = '', $slug = '', $args = array(), $labels = array() ) {
+	public function __construct( $taxonomy = '', $slug = '', $args = array(), $labels = array(), $caps = array() ) {
 
 		// Bail if no taxonomy is passed
 		if ( empty( $taxonomy ) ) {
@@ -82,6 +92,7 @@ class WP_User_Taxonomy {
 		$this->slug     = sanitize_text_field( $slug );
 		$this->args     = $args;
 		$this->labels   = $labels;
+		$this->caps     = $caps;
 
 		// Label helpers
 		$this->tax_singular     = $args['singular'];
@@ -268,8 +279,8 @@ class WP_User_Taxonomy {
 			? (int) $_GET['user_id']
 			: get_current_user_id();
 
-		// Make sure the user can assign terms of the group taxonomy before proceeding.
-		if ( ! current_user_can( 'edit_user', $user_id ) || ! current_user_can( $tax->cap->assign_terms ) ) {
+		// Bail if current user cannot assign terms to this user for this taxonomy
+		if ( ! $this->can_assign( $user_id ) ) {
 			return;
 		}
 
@@ -400,12 +411,12 @@ class WP_User_Taxonomy {
 	 */
 	public function edit_user_relationships( $user = false ) {
 
-		$tax = get_taxonomy( $this->taxonomy );
-
-		// Make sure the user can assign terms of the group taxonomy before proceeding.
-		if ( ! current_user_can( 'edit_user', $user->ID ) || ! current_user_can( $tax->cap->assign_terms ) ) {
+		// Bail if current user cannot assign terms to this user for this taxonomy
+		if ( ! $this->can_assign( $user->ID ) ) {
 			return;
 		}
+
+		$tax = get_taxonomy( $this->taxonomy );
 
 		// Bail if no UI for taxonomy
 		if ( false === $tax->show_ui ) {
@@ -470,7 +481,7 @@ class WP_User_Taxonomy {
 			<thead>
 				<tr>
 					<td id="cb" class="manage-column column-cb check-column">
-						<?php if ( ! $this->is_exclusive() ) : ?>
+						<?php if ( ! $this->is_managed() && ! $this->is_exclusive() ) : ?>
 							<label class="screen-reader-text" for="cb-select-all-1"><?php esc_html_e( 'Select All', 'wp-user-groups' ); ?></label>
 							<input id="cb-select-all-1" type="checkbox">
 						<?php endif; ?>
@@ -489,8 +500,10 @@ class WP_User_Taxonomy {
 
 						<tr class="<?php echo ( true === $active ) ? 'active' : 'inactive'; ?>">
 							<th scope="row" class="check-column">
-								<input type="<?php echo $this->is_exclusive() ? 'radio' : 'checkbox'; ?>" name="<?php echo esc_attr( $this->taxonomy ); ?>[]" id="<?php echo esc_attr( $this->taxonomy ); ?>-<?php echo esc_attr( $term->slug ); ?>" value="<?php echo esc_attr( $term->slug ); ?>" <?php checked( $active ); ?> />
-								<label for="<?php echo esc_attr( $this->taxonomy ); ?>-<?php echo esc_attr( $term->slug ); ?>"></label>
+								<?php if ( ! $this->is_managed() ) : ?>
+									<input type="<?php echo $this->is_exclusive() ? 'radio' : 'checkbox'; ?>" name="<?php echo esc_attr( $this->taxonomy ); ?>[]" id="<?php echo esc_attr( $this->taxonomy ); ?>-<?php echo esc_attr( $term->slug ); ?>" value="<?php echo esc_attr( $term->slug ); ?>" <?php checked( $active ); ?> />
+									<label for="<?php echo esc_attr( $this->taxonomy ); ?>-<?php echo esc_attr( $term->slug ); ?>"></label>
+								<?php endif; ?>
 							</th>
 							<td class="column-primary">
 								<strong><?php echo esc_html( $term->name ); ?></strong>
@@ -523,7 +536,7 @@ class WP_User_Taxonomy {
 			<tfoot>
 				<tr>
 					<td class="manage-column column-cb check-column">
-						<?php if ( ! $this->is_exclusive() ) : ?>
+						<?php if ( ! $this->is_managed() && ! $this->is_exclusive() ) : ?>
 							<label class="screen-reader-text" for="cb-select-all-2"><?php esc_html_e( 'Select All', 'wp-user-groups' ); ?></label>
 							<input id="cb-select-all-2" type="checkbox">
 						<?php endif; ?>
@@ -551,7 +564,7 @@ class WP_User_Taxonomy {
 	protected function row_actions( $tax = array(), $term = false ) {
 		$actions = array();
 
-		// View users
+		// List users in group
 		if ( current_user_can( 'list_users' ) ) {
 			$args      = array( $tax->name => $term->slug );
 			$users     = admin_url( 'users.php' );
@@ -560,7 +573,7 @@ class WP_User_Taxonomy {
 		}
 
 		// Edit term
-		if ( current_user_can( $tax->cap->assign_terms ) ) {
+		if ( current_user_can( 'edit_term', $term->term_id ) ) {
 			$args      = array( 'action' => 'edit', 'taxonomy' => $tax->name, 'tag_ID' => $term->term_id, 'post_type' => 'post' );
 			$edit_tags = admin_url( 'edit-tags.php' );
 			$url       = add_query_arg( $args, $edit_tags );
@@ -650,6 +663,24 @@ class WP_User_Taxonomy {
 	}
 
 	/**
+	 * Parse taxonomy capabilities
+	 *
+	 * @since 2.2.0
+	 *
+	 * @return array
+	 */
+	protected function parse_caps() {
+		return wp_parse_args( $this->caps, array(
+			'manage_terms' => 'list_users',
+			'edit_terms'   => 'list_users',
+			'delete_terms' => 'list_users',
+			'assign_terms' => $this->is_managed()
+				? 'list_users'
+				: 'read'
+		) );
+	}
+
+	/**
 	 * Parse taxonomy options
 	 *
 	 * @since 0.1.0
@@ -669,16 +700,11 @@ class WP_User_Taxonomy {
 			'show_ui'      => true,
 			'meta_box_cb'  => '',
 			'labels'       => $this->parse_labels(),
+			'capabilities' => $this->parse_caps(),
 			'rewrite'      => array(
 				'with_front'   => false,
 				'slug'         => $this->slug,
 				'hierarchical' => true
-			),
-			'capabilities' => array(
-				'manage_terms' => 'list_users',
-				'edit_terms'   => 'list_users',
-				'delete_terms' => 'list_users',
-				'assign_terms' => 'read',
 			),
 
 			// @see _update_post_term_count()
@@ -764,6 +790,18 @@ class WP_User_Taxonomy {
 	}
 
 	/**
+	 * Is this a managed user group type, where a user cannot assign their own
+	 * groups within the taxonomy?
+	 *
+	 * @since 2.2.0
+	 *
+	 * @return bool
+	 */
+	public function is_managed() {
+		return ! empty( $this->args['managed'] );
+	}
+
+	/**
 	 * Handle bulk editing of users
 	 *
 	 * @since 1.0.0
@@ -806,20 +844,20 @@ class WP_User_Taxonomy {
 		$term = str_replace( "-{$this->taxonomy}", '', $term );
 
 		// Loop through users
-		foreach ( $user_ids as $user ) {
+		foreach ( $user_ids as $user_id ) {
 
-			// Skip if current user cannot edit this user
-			if ( ! current_user_can( 'edit_user', $user ) ) {
+			// Skip if current user cannot assign terms to this user for this taxonomy
+			if ( $this->can_assign( $user_id )  ) {
 				continue;
 			}
 
 			// Get term slugs of user for this taxonomy
-			$terms        = wp_get_terms_for_user( $user, $this->taxonomy );
+			$terms        = wp_get_terms_for_user( $user_id, $this->taxonomy );
 			$update_terms = wp_list_pluck( $terms, 'slug' );
 
 			// Adding
 			if ( 'add' === $type ) {
-				if ( ! in_array( $term, $update_terms ) ) {
+				if ( ! in_array( $term, $update_terms, true ) ) {
 					$update_terms[] = $term;
 				}
 
@@ -838,7 +876,7 @@ class WP_User_Taxonomy {
 
 			// Update terms for users
 			if ( $update_terms !== $terms ) {
-				wp_set_terms_for_user( $user, $this->taxonomy, $update_terms, true );
+				wp_set_terms_for_user( $user_id, $this->taxonomy, $update_terms, true );
 			}
 		}
 
@@ -1137,6 +1175,34 @@ class WP_User_Taxonomy {
 
 		// Default return value
 		return $retval;
+	}
+
+	/** Caps ******************************************************************/
+
+	/**
+	 * Whether the current user can assign terms to another user
+	 *
+	 * @since 2.2.0
+	 *
+	 * @param int $user_id
+	 *
+	 * @return boolean
+	 */
+	private function can_assign( $user_id = 0 ) {
+
+		// Default return value
+		$retval = false;
+
+		// Get the taxonomy
+		$tax    = get_taxonomy( $this->taxonomy );
+
+		// Check edit_user and assign
+		if ( current_user_can( 'edit_user', $user_id ) && current_user_can( $tax->cap->assign_terms ) ) {
+			$retval = true;
+		}
+
+		// Return
+		return (bool) $retval;
 	}
 }
 endif;
