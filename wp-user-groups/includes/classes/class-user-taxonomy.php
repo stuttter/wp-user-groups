@@ -808,11 +808,6 @@ class WP_User_Taxonomy {
 	 */
 	public function handle_bulk_actions( $redirect_to = '', $action = '', $user_ids = array() ) {
 
-		// Bail if nonce fails
-		if ( ! $this->verify_nonce() ) {
-			return $redirect_to;
-		}
-
 		// Get terms
 		$terms = get_terms( $this->taxonomy, array(
 			'hide_empty' => false
