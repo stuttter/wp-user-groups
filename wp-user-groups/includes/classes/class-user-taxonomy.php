@@ -943,15 +943,15 @@ class WP_User_Taxonomy {
 		if ( 0 === $count ) {
 			$type = 'warning';
 			$text = ( 'add' === $action )
-				? sprintf( __( 'No users added to %s %s.',     'wp-user-groups' ), $term, $tax )
-				: sprintf( __( 'No users removed from %s %s.', 'wp-user-groups' ), $term, $tax );
+				? sprintf( __( 'No users added to the "%s" %s.',     'wp-user-groups' ), $term, $tax )
+				: sprintf( __( 'No users removed from the "%s" %s.', 'wp-user-groups' ), $term, $tax );
 
 		// Add/remove
 		} else {
 			$type = 'success';
 			$text = ( 'add' === $action )
-				? sprintf( _n( '%s user added to %s %s.',     '%s users added to %s %s.',     $count, 'wp-user-groups' ), number_format_i18n( $count ), $term, $tax )
-				: sprintf( _n( '%s user removed from %s %s.', '%s users removed from %s %s.', $count, 'wp-user-groups' ), number_format_i18n( $count ), $term, $tax );
+				? sprintf( _n( '%s user added to the "%s" %s.',     '%s users added to the "%s" %s.',     $count, 'wp-user-groups' ), number_format_i18n( $count ), $term, $tax )
+				: sprintf( _n( '%s user removed from the "%s" %s.', '%s users removed from the "%s" %s.', $count, 'wp-user-groups' ), number_format_i18n( $count ), $term, $tax );
 		}
 
 		// Output message
