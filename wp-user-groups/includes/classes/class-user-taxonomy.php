@@ -824,7 +824,7 @@ class WP_User_Taxonomy {
 		}
 
 		// New actions array
-		$actions = array();
+		$actions = $changed_users = array();
 
 		// Compile available actions
 		foreach ( $terms as $term ) {
@@ -846,6 +846,9 @@ class WP_User_Taxonomy {
 		// Loop through users
 		foreach ( $user_ids as $user_id ) {
 
+			// Should we update this user's terms?
+			$should_update = false;
+
 			// Skip if current user cannot assign terms to this user for this taxonomy
 			if ( ! $this->can_assign( $user_id )  ) {
 				continue;
@@ -859,13 +862,22 @@ class WP_User_Taxonomy {
 			if ( 'add' === $type ) {
 				if ( ! in_array( $term, $update_terms, true ) ) {
 					$update_terms[] = $term;
+					$should_update  = true;
 				}
 
 			// Removing
 			} elseif ( 'remove' === $type ) {
+
+				// Skip if nothing to remove
+				if ( empty( $update_terms ) ) {
+					continue;
+				}
+
+				// Check the terms for this one
 				$index = array_search( $term, $update_terms );
 				if ( ( false !== $index ) && isset( $update_terms[ $index ] ) ) {
 					unset( $update_terms[ $index ] );
+					$should_update = true;
 				}
 			}
 
@@ -875,15 +887,18 @@ class WP_User_Taxonomy {
 			}
 
 			// Update terms for users
-			if ( $update_terms !== $terms ) {
+			if ( ( $update_terms !== $terms ) && ( true === $should_update ) ) {
+				$changed_users[] = $user_id;
 				wp_set_terms_for_user( $user_id, $this->taxonomy, $update_terms, true );
 			}
 		}
 
 		// Add count to redirection
 		$redirect_to = add_query_arg( array(
-			'user_groups_count' => count( $user_ids ),
-			'action_type'       => $type
+			'user_groups_count' => count( $changed_users ),
+			'action_type'       => $type,
+			'term_slug'         => $term,
+			'tax'               => $this->taxonomy
 		), $redirect_to );
 
 		// Return redirection
@@ -898,28 +913,49 @@ class WP_User_Taxonomy {
 	 * @return void
 	 */
 	public function bulk_notice() {
-		static $highlander = false;
 
 		// Bail if no count
-		if ( ! isset( $_REQUEST['user_groups_count'] ) || empty( $_REQUEST['action_type'] ) || ( true === $highlander ) ) {
+		if ( ! isset( $_REQUEST['user_groups_count'] ) || empty( $_REQUEST['action_type'] ) || empty( $_REQUEST['tax'] ) ) {
 			return;
 		}
 
-		// There can be only one
-		if ( false === $highlander ) {
-			$highlander = true;
+		// Get the changed count and sanitize a few keys
+		$count  = intval( $_REQUEST['user_groups_count'] );
+		$action = sanitize_key( $_REQUEST['action_type'] );
+		$group  = sanitize_key( $_REQUEST['term_slug']   );
+		$tax    = sanitize_key( $_REQUEST['tax']         );
+
+		// Bail if group is not for this taxonomy
+		if ( $this->taxonomy !== $tax ) {
+			return;
 		}
 
-		// Get the count
-		$count = intval( $_REQUEST['user_groups_count'] );
+		// Get the labels
+		$tax    = get_taxonomy( $this->taxonomy )->labels->singular_name;
+		$term   = get_term_by( 'slug', $group, $this->taxonomy )->name;
+
+		// Bail if term does not exist in taxonomy
+		if ( empty( $term ) ) {
+			return;
+		}
+
+		// No users
+		if ( 0 === $count ) {
+			$type = 'warning';
+			$text = ( 'add' === $action )
+				? sprintf( __( 'No users added to %s %s.',     'wp-user-groups' ), $term, $tax )
+				: sprintf( __( 'No users removed from %s %s.', 'wp-user-groups' ), $term, $tax );
 
 		// Add/remove
-		$text = ( 'add' === $_REQUEST['action_type'] )
-			? sprintf( _n( '%s user added.',   '%s users added.',   $count, 'wp-user-groups' ), number_format_i18n( $count ) )
-			: sprintf( _n( '%s user removed.', '%s users removed.', $count, 'wp-user-groups' ), number_format_i18n( $count ) )
+		} else {
+			$type = 'success';
+			$text = ( 'add' === $action )
+				? sprintf( _n( '%s user added to %s %s.',     '%s users added to %s %s.',     $count, 'wp-user-groups' ), number_format_i18n( $count ), $term, $tax )
+				: sprintf( _n( '%s user removed from %s %s.', '%s users removed from %s %s.', $count, 'wp-user-groups' ), number_format_i18n( $count ), $term, $tax );
+		}
 
 		// Output message
-		?><div id="message" class="updated notice notice-success is-dismissible"><p><?php
+		?><div id="message" class="notice notice-<?php echo esc_attr( $type ); ?> is-dismissible"><p><?php
 			echo esc_html( $text );
 			?><button type="button" class="notice-dismiss"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'wp-user-groups' ); ?></span></button>
 		</p></div><?php
