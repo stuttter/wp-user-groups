@@ -624,11 +624,30 @@ class WP_User_Taxonomy {
 	 * @since 0.1.0
 	 */
 	protected function register_user_taxonomy() {
-		$objects = apply_filters( 'wp_user_groups_taxonomy_objects', 'user', $this->taxonomy, $this->parse_options() );
+
+		// Parse the options
+		$options = $this->parse_options();
+
+		/**
+		 * Filter the objects for this taxonomy, allowing for multiple
+		 * relationships to exist. This is risky, as ID collisions may occur, so
+		 * make sure that you're using it correctly
+		 *
+		 * @since 2.4.0
+		 *
+		 * @param array  $defaults Default object types. 'user' by default.
+		 * @param string $taxonomy The current taxonomy
+		 * @param
+		 */
+		$objects = (array) apply_filters( 'wp_user_groups_taxonomy_objects', array(
+			'user'
+		) , $this->taxonomy, $options );
+
+		// Register the taxonomy
 		register_taxonomy(
 			$this->taxonomy,
 			$objects,
-			$this->parse_options()
+			$options
 		);
 	}
 
