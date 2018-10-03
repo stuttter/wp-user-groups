@@ -881,12 +881,10 @@ class WP_User_Taxonomy {
 		}
 
 		// Add count to redirection
-		if ( ! empty( $update_terms ) ) {
-			$redirect_to = add_query_arg( array(
-				'user_groups_count' => count( $user_ids ),
-				'action_type'       => $type
-			), $redirect_to );
-		}
+		$redirect_to = add_query_arg( array(
+			'user_groups_count' => count( $user_ids ),
+			'action_type'       => $type
+		), $redirect_to );
 
 		// Return redirection
 		return $redirect_to;
