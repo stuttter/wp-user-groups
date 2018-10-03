@@ -161,10 +161,12 @@ function wp_get_users_of_group( $args = array(), $user_args = array() ) {
 		return array();
 	}
 
+	// Parse optional user arguments
 	$user_args = wp_parse_args( $user_args, array(
 		'orderby' => 'display_name',
 	) );
 
+	// Strictly enforce the inclusion of user IDs to this group
 	$user_args['include'] = $user_ids;
 
 	// Return queried users.
