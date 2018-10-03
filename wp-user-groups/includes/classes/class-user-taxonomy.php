@@ -901,7 +901,7 @@ class WP_User_Taxonomy {
 		static $highlander = false;
 
 		// Bail if no count
-		if ( empty( $_REQUEST['user_groups_count'] ) || empty( $_REQUEST['action_type'] ) || ( true === $highlander ) ) {
+		if ( ! isset( $_REQUEST['user_groups_count'] ) || empty( $_REQUEST['action_type'] ) || ( true === $highlander ) ) {
 			return;
 		}
 
