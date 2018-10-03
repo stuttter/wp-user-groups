@@ -847,7 +847,7 @@ class WP_User_Taxonomy {
 		foreach ( $user_ids as $user_id ) {
 
 			// Skip if current user cannot assign terms to this user for this taxonomy
-			if ( $this->can_assign( $user_id )  ) {
+			if ( ! $this->can_assign( $user_id )  ) {
 				continue;
 			}
 
