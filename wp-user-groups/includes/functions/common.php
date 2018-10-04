@@ -22,7 +22,7 @@ defined( 'ABSPATH' ) || exit;
 function wp_get_terms_for_user( $user = false, $taxonomy = '' ) {
 
 	// Verify user ID
-	$user_id = is_object( $user )
+	$user_id = is_object( $user ) && ! empty( $user->ID )
 		? $user->ID
 		: absint( $user );
 
@@ -51,7 +51,7 @@ function wp_get_terms_for_user( $user = false, $taxonomy = '' ) {
 function wp_set_terms_for_user( $user = false, $taxonomy = '', $terms = array() ) {
 
 	// Verify user ID
-	$user_id = is_object( $user )
+	$user_id = is_object( $user ) && ! empty( $user->ID )
 		? $user->ID
 		: absint( $user );
 
