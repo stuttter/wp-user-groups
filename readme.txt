@@ -3,7 +3,7 @@ Contributors: johnjamesjacoby, stuttter
 Tags: taxonomy, term, user, group, type
 Requires at least: 4.7
 Tested up to: 4.9
-Stable tag: 2.3.0
+Stable tag: 2.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9Q4F4EL5YJ62J
@@ -76,7 +76,12 @@ http://github.com/stuttter/wp-user-groups/
 
 == Changelog ==
 
-= [2.3.0] - 2018/06/05 =
+= [2.4.0] - 2018/10/04 =
+* Simplify get and set functions for user terms
+* Add support for advanced WP_User_Query arguments
+* Fix custom column support in user taxonomies
+
+= [2.3.0] - 2018/10/03 =
 * More descriptive text for bulk actions
 * Fix bulk actions not working
 
