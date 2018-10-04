@@ -58,7 +58,7 @@ function wp_set_terms_for_user( $user_id, $taxonomy, $terms = array() ) {
 	} else {
 
 		// Sets the terms for the user
-		wp_set_object_terms( $user_id, $_terms, $taxonomy, false );
+		wp_set_object_terms( $user_id, $terms, $taxonomy, false );
 	}
 
 	// Clean the cache
