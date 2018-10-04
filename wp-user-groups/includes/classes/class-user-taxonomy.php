@@ -344,8 +344,8 @@ class WP_User_Taxonomy {
 		}
 
 		// Get terms from the $_POST global if available
-		$terms = isset( $_POST[ $taxonomy ] )
-			? $_POST[ $taxonomy ]
+		$terms = isset( $_POST[ $this->taxonomy ] )
+			? $_POST[ $this->taxonomy ]
 			: null;
 
 		// Set terms for user
