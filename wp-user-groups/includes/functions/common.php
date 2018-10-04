@@ -42,22 +42,30 @@ function wp_get_terms_for_user( $user = false, $taxonomy = '' ) {
  *
  * @since 0.1.0
  *
- * @param  int     $user_id
+ * @param  mixed   $user
  * @param  string  $taxonomy
  * @param  array   $terms
  *
  * @return void
  */
-function wp_set_terms_for_user( $user_id, $taxonomy, $terms = array() ) {
+function wp_set_terms_for_user( $user = false, $taxonomy = '', $terms = array() ) {
 
-	// Delete all user terms
-	if ( is_null( $terms ) || empty( $terms ) ) {
+	// Verify user ID
+	$user_id = is_object( $user )
+		? $user->ID
+		: absint( $user );
+
+	// Bail if empty
+	if ( empty( $user_id ) ) {
+		return false;
+	}
+
+	// Delete all terms for the user
+	if ( empty( $terms ) ) {
 		wp_delete_object_term_relationships( $user_id, $taxonomy );
 
-	// Set the terms
+	// Sets the terms for the user
 	} else {
-
-		// Sets the terms for the user
 		wp_set_object_terms( $user_id, $terms, $taxonomy, false );
 	}
 
