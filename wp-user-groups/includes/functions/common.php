@@ -42,28 +42,13 @@ function wp_get_terms_for_user( $user = false, $taxonomy = '' ) {
  *
  * @since 0.1.0
  *
- * @param  int      $user_id
- * @param  string   $taxonomy
- * @param  array    $terms
- * @param  boolean  $bulk
+ * @param  int     $user_id
+ * @param  string  $taxonomy
+ * @param  array   $terms
  *
- * @return boolean
+ * @return void
  */
-function wp_set_terms_for_user( $user_id, $taxonomy, $terms = array(), $bulk = false ) {
-
-	// Get the taxonomy
-	$tax = get_taxonomy( $taxonomy );
-
-	// Make sure the current user can edit the user and assign terms before proceeding.
-	if ( ! current_user_can( 'edit_user', $user_id ) || ! current_user_can( $tax->cap->assign_terms ) ) {
-		return false;
-	}
-
-	if ( empty( $terms ) && empty( $bulk ) ) {
-		$terms = isset( $_POST[ $taxonomy ] )
-			? $_POST[ $taxonomy ]
-			: null;
-	}
+function wp_set_terms_for_user( $user_id, $taxonomy, $terms = array() ) {
 
 	// Delete all user terms
 	if ( is_null( $terms ) || empty( $terms ) ) {
@@ -71,10 +56,9 @@ function wp_set_terms_for_user( $user_id, $taxonomy, $terms = array(), $bulk = f
 
 	// Set the terms
 	} else {
-		$_terms = array_map( 'sanitize_key', $terms );
 
 		// Sets the terms for the user
-		wp_set_object_terms( $user_id, $_terms, $taxonomy, false );
+		wp_set_object_terms( $user_id, $terms, $taxonomy, false );
 	}
 
 	// Clean the cache
