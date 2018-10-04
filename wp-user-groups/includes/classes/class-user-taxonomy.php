@@ -403,13 +403,16 @@ class WP_User_Taxonomy {
 
 		// Users column gets custom content
 		if ( 'users' === $column ) {
-			$term  = get_term( $term_id, $this->taxonomy );
-			$args  = array( $this->taxonomy => $term->slug );
-			$users = admin_url( 'users.php' );
-			$url   = add_query_arg( $args, $users );
-			$text  = number_format_i18n( $term->count );
-			echo '<a href="' . esc_url( $url ) . '">' . esc_html( $text ) . '</a>';
+			$term    = get_term( $term_id, $this->taxonomy );
+			$args    = array( $this->taxonomy => $term->slug );
+			$users   = admin_url( 'users.php' );
+			$url     = add_query_arg( $args, $users );
+			$text    = number_format_i18n( $term->count );
+			$display = '<a href="' . esc_url( $url ) . '">' . esc_html( $text ) . '</a>';
 		}
+
+		// Return the new content for display
+		return $display;
 	}
 
 	/**
