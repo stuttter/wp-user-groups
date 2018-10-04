@@ -338,8 +338,21 @@ class WP_User_Taxonomy {
 			}
 		}
 
+		// Make sure the current user can edit the user and assign terms before proceeding.
+		if ( ! $this->can_assign( $user_id ) ) {
+			return false;
+		}
+
+		$terms = isset( $_POST[ $taxonomy ] )
+			? $_POST[ $taxonomy ]
+			: null;
+
+		if ( is_array( $terms ) ) {
+			$terms = array_map( 'sanitize_key', $terms );
+		}
+
 		// Set terms for user
-		wp_set_terms_for_user( $user_id, $this->taxonomy );
+		wp_set_terms_for_user( $user_id, $this->taxonomy, $terms );
 	}
 
 	/**
