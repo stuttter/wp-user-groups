@@ -41,6 +41,7 @@ function wp_user_groups_add_profile_section( $sections = array() ) {
 		'name'  => esc_html__( 'Groups', 'wp-user-activity' ),
 		'cap'   => 'edit_profile',
 		'icon'  => 'dashicons-groups',
+		'parent' => '',
 		'order' => 90
 	);
 
