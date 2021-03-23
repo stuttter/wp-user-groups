@@ -4,13 +4,12 @@
  * Plugin Name: WP User Groups
  * Plugin URI:  https://wordpress.org/plugins/wp-user-groups/
  * Author:      John James Jacoby
- * Author URI:  https://profiles.wordpress.org/johnjamesjacoby/
+ * Author URI:  https://jjj.blog
  * License:     GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Description: Group users together with taxonomies & terms.
- * Version:     2.4.0
+ * Version:     2.5.0
  * Text Domain: wp-user-groups
- * Domain Path: /wp-user-groups/assets/languages/
  */
 
 // Exit if accessed directly
@@ -56,5 +55,7 @@ function wp_user_groups_get_plugin_url() {
  * @return int
  */
 function wp_user_groups_get_asset_version() {
-	return 201806050001;
+	return defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG
+		? time()
+		: 202103230001;
 }

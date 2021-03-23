@@ -1,12 +1,12 @@
 === WP User Groups ===
-Contributors: johnjamesjacoby, stuttter
-Tags: taxonomy, term, user, group, type
+Contributors:      johnjamesjacoby, stuttter
+Tags:              taxonomy, term, user, group, type
 Requires at least: 4.7
-Tested up to: 4.9
-Stable tag: 2.4.0
-License: GPLv2 or later
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9Q4F4EL5YJ62J
+Tested up to:      5.8
+Stable tag:        2.5.0
+License:           GPLv2 or later
+License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+Donate link:       https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9Q4F4EL5YJ62J
 
 == Description ==
 
@@ -18,13 +18,12 @@ WP User Groups allows users to be categorized using custom taxonomies & terms.
 * Bulk edit many users to quickly assign several at once
 * Filter the users list to see which users are in what groups
 * Not destructive data storage (plugin can be enabled & disabled without damage)
-* Works great with all WP Term Meta plugins (see below)
+* Works great with all WP User & Term plugins (see below)
 
 = Also checkout =
 
 * [WP Chosen](https://wordpress.org/plugins/wp-chosen/ "Make long, unwieldy select boxes much more user-friendly.")
 * [WP Pretty Filters](https://wordpress.org/plugins/wp-pretty-filters/ "Makes post filters better match what's already in Media & Attachments.")
-* [WP Event Calendar](https://wordpress.org/plugins/wp-event-calendar/ "The best way to manage events in WordPress.")
 * [WP Media Categories](https://wordpress.org/plugins/wp-media-categories/ "Add categories to media & attachments.")
 * [WP Term Order](https://wordpress.org/plugins/wp-term-order/ "Sort taxonomy terms, your way.")
 * [WP Term Authors](https://wordpress.org/plugins/wp-term-authors/ "Authors for categories, tags, and other taxonomy terms.")
@@ -59,7 +58,7 @@ No. There are no new database tables with this plugin.
 
 = Does this modify existing database tables? =
 
-No. All of WordPress's core database tables remain untouched.
+No. All of the WordPress core database tables remain untouched.
 
 = Does this plugin integrate with user roles? =
 
@@ -67,14 +66,17 @@ No. This is best left to plugins that choose to integrate with this plugin.
 
 = Where can I get support? =
 
-* Basic: https://wordpress.org/support/plugin/wp-user-groups/
-* Priority: https://chat.flox.io/support/channels/wp-user-groups/
+* Community: https://wordpress.org/support/plugin/wp-user-groups
+* Development: https://github.com/stuttter/wp-user-groups/discussions
 
 = Where can I find documentation? =
 
-http://github.com/stuttter/wp-user-groups/
+https://github.com/stuttter/wp-user-groups/
 
 == Changelog ==
+
+= [2.5.0] - 2021/03/23 =
+* Improve compatibility with WP User Profiles plugin (props John Blackbourn)
 
 = [2.4.0] - 2018/10/04 =
 * Simplify get and set functions for user terms
