@@ -14,8 +14,9 @@ WP User Groups allows users to be categorized using custom taxonomies & terms.
 
 * Download and install using the built in WordPress plugin installer.
 * Activate in the "Plugins" area of your admin by clicking the "Activate" link.
-* Visit "Users > Groups" and create some groups
-* Add users to groups by editing their profile and checking the boxes
+* Consider sponsoring future development by clicking "Sponsor".
+* Visit "Users > Groups" and create some groups.
+* Add users to groups by editing their profile and checking the boxes.
 
 # FAQ
 
@@ -36,6 +37,6 @@ No. This is best left to plugins that choose to integrate with this plugin.
 * Community: https://wordpress.org/support/plugin/wp-user-groups
 * Development: https://github.com/stuttter/wp-user-groups/discussions
 
-### Can I contribute?
+### Contributing
 
-Yes, please! User Groups is a very important extension to WordPress. Having an easy-to-use API and powerful set of functions is critical to managing complex WordPress installations. If this is your thing, please help us out!
+Please [open a new issue](/pull/new/master) to discuss whether the feature is a good fit for the project. Once you've decided to work on a pull request, please follow the [WordPress Coding Standards](http://make.wordpress.org/core/handbook/coding-standards/).
