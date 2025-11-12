@@ -68,6 +68,42 @@ class WP_User_Taxonomy {
 	public $caps = array();
 
 	/**
+	 * Singular label
+	 *
+	 * @since 0.1.0
+	 *
+	 * @var string
+	 */
+	protected $tax_singular = '';
+
+	/**
+	 * Plural label
+	 *
+	 * @since 0.1.0
+	 *
+	 * @var string
+	 */
+	protected $tax_plural = '';
+
+	/**
+	 * Lowercase singular label
+	 *
+	 * @since 0.1.0
+	 *
+	 * @var string
+	 */
+	protected $tax_singular_low = '';
+
+	/**
+	 * Lowercase plural label
+	 *
+	 * @since 0.1.0
+	 *
+	 * @var string
+	 */
+	protected $tax_plural_low = '';
+
+	/**
 	 * Main constructor
 	 *
 	 * @since 0.1.0
