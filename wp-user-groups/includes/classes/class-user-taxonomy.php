@@ -15,7 +15,6 @@ if ( ! class_exists( 'WP_User_Taxonomy' ) ) :
  *
  * @since 0.1.0
  */
-#[AllowDynamicProperties]
 class WP_User_Taxonomy {
 
 	/**
