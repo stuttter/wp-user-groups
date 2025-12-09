@@ -25,20 +25,49 @@ function wp_user_groups_admin_assets() {
 /**
  * Add new section to User Profiles
  *
+ * Only adds the Groups section if at least one user group taxonomy has terms.
+ * This prevents displaying an empty Groups tab when no groups are registered.
+ *
  * @since 0.1.9
  *
- * @param array $sections
+ * @param array $sections Array of existing profile sections.
+ * @return array Modified sections array with Groups section added only if groups exist.
  */
 function wp_user_groups_add_profile_section( $sections = array() ) {
+
+	// Get all user group taxonomies
+	$taxonomies = wp_get_user_groups();
+	$has_terms  = false;
+
+	// Check if any user group taxonomy has terms
+	if ( ! empty( $taxonomies ) ) {
+		foreach ( $taxonomies as $taxonomy ) {
+			$terms = get_terms( array(
+				'taxonomy'   => $taxonomy,
+				'hide_empty' => false,
+				'number'     => 1,
+				'fields'     => 'ids',
+			) );
+			if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
+				$has_terms = true;
+				break;
+			}
+		}
+	}
+
+	// Bail if no groups are registered
+	if ( ! $has_terms ) {
+		return $sections;
+	}
 
 	// Copy for modifying
 	$new_sections = $sections;
 
-	// Add the "Activity" section
+	// Add the "Groups" section
 	$new_sections['groups'] = array(
 		'id'    => 'groups',
 		'slug'  => 'groups',
-		'name'  => esc_html__( 'Groups', 'wp-user-activity' ),
+		'name'  => esc_html__( 'Groups', 'wp-user-groups' ),
 		'cap'   => 'edit_profile',
 		'icon'  => 'dashicons-groups',
 		'parent' => '',
