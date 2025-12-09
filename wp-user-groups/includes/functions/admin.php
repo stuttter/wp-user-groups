@@ -46,6 +46,7 @@ function wp_user_groups_add_profile_section( $sections = array() ) {
 				'taxonomy'   => $taxonomy,
 				'hide_empty' => false,
 				'number'     => 1,
+				'fields'     => 'ids',
 			) );
 			if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
 				$has_terms = true;
