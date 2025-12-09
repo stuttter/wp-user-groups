@@ -31,6 +31,29 @@ function wp_user_groups_admin_assets() {
  */
 function wp_user_groups_add_profile_section( $sections = array() ) {
 
+	// Get all user group taxonomies
+	$taxonomies = wp_get_user_groups();
+	$has_terms  = false;
+
+	// Check if any user group taxonomy has terms
+	if ( ! empty( $taxonomies ) ) {
+		foreach ( $taxonomies as $taxonomy ) {
+			$terms = get_terms( array(
+				'taxonomy'   => $taxonomy,
+				'hide_empty' => false,
+			) );
+			if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
+				$has_terms = true;
+				break;
+			}
+		}
+	}
+
+	// Bail if no groups are registered
+	if ( ! $has_terms ) {
+		return $sections;
+	}
+
 	// Copy for modifying
 	$new_sections = $sections;
 
