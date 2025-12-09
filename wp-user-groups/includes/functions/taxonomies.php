@@ -21,7 +21,8 @@ defined( 'ABSPATH' ) || exit;
 function wp_register_default_user_group_taxonomy() {
 	new WP_User_Taxonomy( 'user-group', 'users/group', array(
 		'singular' => __( 'Group',  'wp-user-groups' ),
-		'plural'   => __( 'Groups', 'wp-user-groups' )
+		'plural'   => __( 'Groups', 'wp-user-groups' ),
+		'managed'  => false
 	) );
 }
 
@@ -37,6 +38,7 @@ function wp_register_default_user_group_taxonomy() {
 function wp_register_default_user_type_taxonomy() {
 	new WP_User_Taxonomy( 'user-type',  'users/type', array(
 		'singular' => __( 'Type',  'wp-user-groups' ),
-		'plural'   => __( 'Types', 'wp-user-groups' )
+		'plural'   => __( 'Types', 'wp-user-groups' ),
+		'managed'  => false
 	) );
 }
