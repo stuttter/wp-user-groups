@@ -25,9 +25,13 @@ function wp_user_groups_admin_assets() {
 /**
  * Add new section to User Profiles
  *
+ * Only adds the Groups section if at least one user group taxonomy has terms.
+ * This prevents displaying an empty Groups tab when no groups are registered.
+ *
  * @since 0.1.9
  *
- * @param array $sections
+ * @param array $sections Array of existing profile sections.
+ * @return array Modified sections array with Groups section added only if groups exist.
  */
 function wp_user_groups_add_profile_section( $sections = array() ) {
 
@@ -41,6 +45,7 @@ function wp_user_groups_add_profile_section( $sections = array() ) {
 			$terms = get_terms( array(
 				'taxonomy'   => $taxonomy,
 				'hide_empty' => false,
+				'number'     => 1,
 			) );
 			if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
 				$has_terms = true;
