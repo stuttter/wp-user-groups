@@ -15,7 +15,6 @@ if ( ! class_exists( 'WP_User_Taxonomy' ) ) :
  *
  * @since 0.1.0
  */
-#[AllowDynamicProperties]
 class WP_User_Taxonomy {
 
 	/**
@@ -75,7 +74,7 @@ class WP_User_Taxonomy {
 	 *
 	 * @var string
 	 */
-	protected $tax_singular = '';
+	public $tax_singular = '';
 
 	/**
 	 * Plural label
@@ -84,7 +83,7 @@ class WP_User_Taxonomy {
 	 *
 	 * @var string
 	 */
-	protected $tax_plural = '';
+	public $tax_plural = '';
 
 	/**
 	 * Lowercase singular label
@@ -93,7 +92,7 @@ class WP_User_Taxonomy {
 	 *
 	 * @var string
 	 */
-	protected $tax_singular_low = '';
+	public $tax_singular_low = '';
 
 	/**
 	 * Lowercase plural label
@@ -102,7 +101,7 @@ class WP_User_Taxonomy {
 	 *
 	 * @var string
 	 */
-	protected $tax_plural_low = '';
+	public $tax_plural_low = '';
 
 	/**
 	 * Main constructor
