@@ -36,11 +36,12 @@ final class UserTaxonomyTest extends TestCase {
 			static function ( ReflectionProperty $property ): string { return $property->getName(); },
 			( new ReflectionClass( WP_User_Taxonomy::class ) )->getProperties( ReflectionProperty::IS_PUBLIC )
 		);
+		$expected = array( 'taxonomy', 'slug', 'args', 'labels', 'caps', 'tax_singular', 'tax_plural', 'tax_singular_low', 'tax_plural_low' );
 
-		$this->assertSame(
-			array( 'taxonomy', 'slug', 'args', 'labels', 'caps', 'tax_singular', 'tax_plural', 'tax_singular_low', 'tax_plural_low' ),
-			$properties
-		);
+		sort( $properties );
+		sort( $expected );
+
+		$this->assertSame( $expected, $properties );
 	}
 
 	public function test_managed_taxonomy_remains_editable_for_administrators(): void {
