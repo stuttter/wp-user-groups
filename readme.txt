@@ -7,10 +7,10 @@ License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 License:           GPLv2 or later
 Contributors:      johnjamesjacoby
 Tags:              user, profile, group, taxonomy, term
-Requires PHP:      8.0
+Requires PHP:      7.2
 Requires at least: 5.2
-Tested up to:      5.8
-Stable tag:        2.5.1
+Tested up to:      7.1
+Stable tag:        2.6.0
 
 == Description ==
 
@@ -81,6 +81,12 @@ No. This is best left to plugins that choose to integrate with this plugin.
 * Development: https://github.com/stuttter/wp-user-groups/discussions
 
 == Changelog ==
+
+= [2.6.0] - 2026/09/09 =
+* Avoid PHP 8.2 deprecation notices while preserving public label properties
+* Allow administrators to manage otherwise managed user taxonomies
+* Hide the User Profiles Groups section when no groups exist
+* Correct the Groups section text domain
 
 = [2.5.1] - 2021/05/29 =
 * Update author info

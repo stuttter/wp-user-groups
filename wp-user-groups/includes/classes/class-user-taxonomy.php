@@ -867,11 +867,7 @@ class WP_User_Taxonomy {
 	 * @return bool
 	 */
 	public function is_managed() {
-		if ( current_user_can('administrator') ) {
-			return false;
-		} else {
-			return ! empty( $this->args['managed'] );
-		}
+		return ! current_user_can( 'manage_options' ) && ! empty( $this->args['managed'] );
 	}
 
 	/**

@@ -8,12 +8,11 @@
  * Author URI:        https://jjj.software
  * License:           GPLv2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       wp-user-activity
- * Domain Path:       /wp-user-activity/includes/languages
+ * Text Domain:       wp-user-groups
  * Requires at least: 5.2
- * Requires PHP:      8.0
- * Tested up to:      5.8
- * Version:           2.5.0
+ * Requires PHP:      7.2
+ * Tested up to:      7.1
+ * Version:           2.6.0
  */
 
 // Exit if accessed directly
@@ -62,5 +61,5 @@ function wp_user_groups_get_plugin_url() {
 function wp_user_groups_get_asset_version() {
 	return defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG
 		? time()
-		: 202103230001;
+		: 202609090001;
 }
