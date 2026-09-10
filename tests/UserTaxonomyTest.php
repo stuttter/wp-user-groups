@@ -4,11 +4,17 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
-final class TestableUserTaxonomy extends WP_User_Taxonomy {
+class TestableUserTaxonomy extends WP_User_Taxonomy {
 	public function render_table( $user, $taxonomy, $terms ): string {
 		ob_start();
 		$this->table_contents( $user, $taxonomy, $terms );
 		return (string) ob_get_clean();
+	}
+}
+
+final class CustomRowActionsUserTaxonomy extends TestableUserTaxonomy {
+	protected function row_actions( $tax = array(), $term = false ) {
+		return 'Custom row action';
 	}
 }
 
@@ -60,6 +66,22 @@ final class UserTaxonomyTest extends TestCase {
 		$this->assertStringContainsString( 'checked="checked"', $html );
 		$this->assertStringContainsString( 'name="wp_user_taxonomy_user-group"', $html );
 		$this->assertStringContainsString( '>Editors<', $html );
+		$this->assertCount( 1, $GLOBALS['wpug_test']['calls']['is_object_in_term'] );
+	}
+
+	public function test_table_preserves_subclass_row_actions_extension_point(): void {
+		$GLOBALS['wpug_test']['returns']['current_user_can']  = false;
+		$GLOBALS['wpug_test']['returns']['is_object_in_term'] = false;
+		$term = (object) array( 'term_id' => 8, 'slug' => 'editors', 'name' => 'Editors', 'description' => '', 'count' => 3 );
+		$tax  = (object) array( 'name' => 'user-group', 'labels' => (object) array( 'not_found' => 'No groups found' ) );
+		$reflection = new ReflectionClass( CustomRowActionsUserTaxonomy::class );
+		$taxonomy   = $reflection->newInstanceWithoutConstructor();
+		$taxonomy->taxonomy = 'user-group';
+		$taxonomy->args     = array();
+
+		$html = $taxonomy->render_table( (object) array( 'ID' => 7 ), $tax, array( $term ) );
+
+		$this->assertStringContainsString( 'Custom row action', $html );
 	}
 
 	public function test_table_uses_taxonomy_column_filters(): void {

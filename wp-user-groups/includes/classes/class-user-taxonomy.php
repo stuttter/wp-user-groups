@@ -540,19 +540,6 @@ class WP_User_Taxonomy {
 	 * @param object $term
 	 */
 	protected function row_actions( $tax = array(), $term = false ) {
-		return $this->get_term_row_actions( $tax, $term );
-	}
-
-	/**
-	 * Return row actions when editing a user.
-	 *
-	 * @since 2.7.0
-	 *
-	 * @param object $tax  Taxonomy object.
-	 * @param object $term Term object.
-	 * @return string
-	 */
-	public function get_term_row_actions( $tax = array(), $term = false ) {
 		$actions = array();
 
 		// List users in group
@@ -575,6 +562,22 @@ class WP_User_Taxonomy {
 		$actions = apply_filters( 'wp_user_groups_row_actions', $actions, $tax, $term, $this );
 
 		return implode( ' | ', $actions );
+	}
+
+	/**
+	 * Return row actions when editing a user.
+	 *
+	 * This public bridge preserves the protected row_actions() extension point
+	 * while allowing the separate list-table collaborator to render it.
+	 *
+	 * @since 2.7.0
+	 *
+	 * @param object $tax  Taxonomy object.
+	 * @param object $term Term object.
+	 * @return string
+	 */
+	public function get_term_row_actions( $tax = array(), $term = false ) {
+		return $this->row_actions( $tax, $term );
 	}
 
 	/**

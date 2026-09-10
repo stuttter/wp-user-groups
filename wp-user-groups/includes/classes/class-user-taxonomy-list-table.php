@@ -55,6 +55,15 @@ class WP_User_Taxonomy_List_Table extends WP_List_Table {
 	protected $has_bulk_selection = false;
 
 	/**
+	 * Cached relationship state keyed by term ID.
+	 *
+	 * @since 2.7.0
+	 *
+	 * @var array
+	 */
+	protected $term_relationships = array();
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 2.7.0
@@ -151,7 +160,7 @@ class WP_User_Taxonomy_List_Table extends WP_List_Table {
 	 * @param WP_Term $term Term being displayed.
 	 */
 	public function single_row( $term ) {
-		$active = is_object_in_term( $this->user->ID, $this->taxonomy->name, $term->slug );
+		$active = $this->is_term_active( $term );
 		$class  = ( true === $active ) ? 'active' : 'inactive';
 
 		echo '<tr class="' . esc_attr( $class ) . '">';
@@ -197,7 +206,7 @@ class WP_User_Taxonomy_List_Table extends WP_List_Table {
 	 * @return string
 	 */
 	protected function selection_input( $term, $type ) {
-		$active = is_object_in_term( $this->user->ID, $this->taxonomy->name, $term->slug );
+		$active = $this->is_term_active( $term );
 		$id     = $this->taxonomy->name . '-' . $term->slug;
 
 		return sprintf(
@@ -209,6 +218,24 @@ class WP_User_Taxonomy_List_Table extends WP_List_Table {
 			checked( $active, true, false ),
 			esc_html( $term->name )
 		);
+	}
+
+	/**
+	 * Return and cache whether the displayed user has a term relationship.
+	 *
+	 * @since 2.7.0
+	 *
+	 * @param WP_Term $term Term being displayed.
+	 * @return bool
+	 */
+	protected function is_term_active( $term ) {
+		$term_id = (int) $term->term_id;
+
+		if ( ! array_key_exists( $term_id, $this->term_relationships ) ) {
+			$this->term_relationships[ $term_id ] = is_object_in_term( $this->user->ID, $this->taxonomy->name, $term->slug );
+		}
+
+		return $this->term_relationships[ $term_id ];
 	}
 
 	/**
