@@ -524,80 +524,9 @@ class WP_User_Taxonomy {
 	 * @since 0.1.6
 	 */
 	protected function table_contents( $user, $tax, $terms ) {
-		?>
-
-		<table class="wp-list-table widefat fixed striped user-groups">
-			<thead>
-				<tr>
-					<td id="cb" class="manage-column column-cb check-column">
-						<?php if ( ! $this->is_managed() && ! $this->is_exclusive() ) : ?>
-							<label class="screen-reader-text" for="cb-select-all-1"><?php esc_html_e( 'Select All', 'wp-user-groups' ); ?></label>
-							<input id="cb-select-all-1" type="checkbox">
-						<?php endif; ?>
-					</td>
-					<th scope="col" class="manage-column column-name column-primary"><?php esc_html_e( 'Name', 'wp-user-groups' ); ?></th>
-					<th scope="col" class="manage-column column-description"><?php esc_html_e( 'Description', 'wp-user-groups' ); ?></th>
-					<th scope="col" class="manage-column column-users"><?php esc_html_e( 'Users', 'wp-user-groups' ); ?></th>
-				</tr>
-			</thead>
-			<tbody>
-
-				<?php if ( ! empty( $terms ) ) :
-
-					foreach ( $terms as $term ) :
-						$active = is_object_in_term( $user->ID, $this->taxonomy, $term->slug ); ?>
-
-						<tr class="<?php echo ( true === $active ) ? 'active' : 'inactive'; ?>">
-							<th scope="row" class="check-column">
-								<?php if ( ! $this->is_managed() ) : ?>
-									<input type="<?php echo $this->is_exclusive() ? 'radio' : 'checkbox'; ?>" name="<?php echo esc_attr( $this->taxonomy ); ?>[]" id="<?php echo esc_attr( $this->taxonomy ); ?>-<?php echo esc_attr( $term->slug ); ?>" value="<?php echo esc_attr( $term->slug ); ?>" <?php checked( $active ); ?> />
-									<label for="<?php echo esc_attr( $this->taxonomy ); ?>-<?php echo esc_attr( $term->slug ); ?>"></label>
-								<?php endif; ?>
-							</th>
-							<td class="column-primary">
-								<strong><?php echo esc_html( $term->name ); ?></strong>
-								<div class="row-actions">
-									<?php echo $this->row_actions( $tax, $term ); ?>
-								</div>
-							</td>
-							<td class="column-description"><?php echo ! empty( $term->description ) ? esc_html( $term->description ) : '&#8212;'; ?></td>
-							<td class="column-users"><?php echo esc_html( $term->count ); ?></td>
-						</tr>
-
-					<?php
-
-					endforeach;
-
-				// If there are no user groups
-				else : ?>
-
-					<tr>
-						<td colspan="4">
-
-							<?php echo esc_html( $tax->labels->not_found ); ?>
-
-						</td>
-					</tr>
-
-				<?php endif; ?>
-
-			</tbody>
-			<tfoot>
-				<tr>
-					<td class="manage-column column-cb check-column">
-						<?php if ( ! $this->is_managed() && ! $this->is_exclusive() ) : ?>
-							<label class="screen-reader-text" for="cb-select-all-2"><?php esc_html_e( 'Select All', 'wp-user-groups' ); ?></label>
-							<input id="cb-select-all-2" type="checkbox">
-						<?php endif; ?>
-					</td>
-					<th scope="col" class="manage-column column-name column-primary"><?php esc_html_e( 'Name', 'wp-user-groups' ); ?></th>
-					<th scope="col" class="manage-column column-description"><?php esc_html_e( 'Description', 'wp-user-groups' ); ?></th>
-					<th scope="col" class="manage-column column-users"><?php esc_html_e( 'Users', 'wp-user-groups' ); ?></th>
-				</tr>
-			</tfoot>
-		</table>
-
-		<?php
+		$list_table = new WP_User_Taxonomy_List_Table( $this, $user, $tax, $terms );
+		$list_table->prepare_items();
+		$list_table->display();
 
 		// Nonce for table fields
 		$this->nonce_field();
@@ -633,6 +562,22 @@ class WP_User_Taxonomy {
 		$actions = apply_filters( 'wp_user_groups_row_actions', $actions, $tax, $term, $this );
 
 		return implode( ' | ', $actions );
+	}
+
+	/**
+	 * Return row actions when editing a user.
+	 *
+	 * This public bridge preserves the protected row_actions() extension point
+	 * while allowing the separate list-table collaborator to render it.
+	 *
+	 * @since 2.7.0
+	 *
+	 * @param object $tax  Taxonomy object.
+	 * @param object $term Term object.
+	 * @return string
+	 */
+	public function get_term_row_actions( $tax = array(), $term = false ) {
+		return $this->row_actions( $tax, $term );
 	}
 
 	/**

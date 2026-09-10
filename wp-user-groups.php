@@ -30,6 +30,12 @@ function _wp_user_groups() {
 
 	// Classes
 	require_once $plugin_path . 'includes/classes/class-user-taxonomy.php';
+	if ( is_admin() ) {
+		if ( ! class_exists( 'WP_List_Table' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
+		}
+		require_once $plugin_path . 'includes/classes/class-user-taxonomy-list-table.php';
+	}
 
 	// Functions
 	require_once $plugin_path . 'includes/functions/admin.php';

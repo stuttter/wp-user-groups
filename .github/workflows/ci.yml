@@ -15,3 +15,69 @@ jobs:
     uses: stuttter/.github/.github/workflows/wordpress-plugin-ci.yml@main
     with:
       php-versions: '["7.2", "7.4", "8.0", "8.2", "8.4"]'
+
+  integration:
+    name: WordPress ${{ matrix.wordpress }} / PHP ${{ matrix.php }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - wordpress: '5.2'
+            php: '7.4'
+          - wordpress: '7.1'
+            php: '8.4'
+    services:
+      mysql:
+        image: mysql:8.4.6@sha256:869218921e61d6c3c89820955d63cca42971f0e3e6c1e2792247bbd944ebc6e9
+        env:
+          MYSQL_DATABASE: wordpress_tests
+          MYSQL_USER: wordpress
+          MYSQL_PASSWORD: wordpress
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --host=127.0.0.1 --user=root --password=root"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+    steps:
+      - name: Check out plugin
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up PHP and WP-CLI
+        uses: shivammathur/setup-php@44454db4f0199b8b9685a5d763dc37cbf79108e1 # 2.36.0
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: wp-cli:2.12.0
+
+      - name: Install WordPress
+        env:
+          WP_VERSION: ${{ matrix.wordpress }}
+        shell: bash
+        run: |
+          wordpress_root="${RUNNER_TEMP}/wordpress"
+          wp core download --version="${WP_VERSION}" --path="${wordpress_root}"
+          wp config create \
+            --path="${wordpress_root}" \
+            --dbname=wordpress_tests \
+            --dbuser=wordpress \
+            --dbpass=wordpress \
+            --dbhost=127.0.0.1:3306 \
+            --skip-check
+          wp core install \
+            --path="${wordpress_root}" \
+            --url=https://example.test \
+            --title='WP User Groups tests' \
+            --admin_user=admin \
+            --admin_password=password \
+            --admin_email=admin@example.test \
+            --skip-email
+          ln -s "${GITHUB_WORKSPACE}" "${wordpress_root}/wp-content/plugins/wp-user-groups"
+          wp plugin activate wp-user-groups --path="${wordpress_root}"
+          wp eval-file "${GITHUB_WORKSPACE}/tests/integration/ListTableSmoke.php" --path="${wordpress_root}"
