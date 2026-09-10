@@ -1,0 +1,57 @@
+name: Bug report
+description: Report a reproducible problem in WP User Groups.
+title: "Bug: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: Security vulnerabilities must be reported through [GitHub's private advisory form](https://github.com/stuttter/wp-user-groups/security/advisories/new), not in a public issue.
+  - type: textarea
+    id: behavior
+    attributes:
+      label: What happened?
+      description: Describe the observed behavior and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: Provide the smallest reliable sequence that demonstrates the problem.
+    validations:
+      required: true
+  - type: input
+    id: plugin-version
+    attributes:
+      label: WP User Groups version
+    validations:
+      required: true
+  - type: input
+    id: wordpress-version
+    attributes:
+      label: WordPress version
+    validations:
+      required: true
+  - type: input
+    id: php-version
+    attributes:
+      label: PHP version
+    validations:
+      required: true
+  - type: dropdown
+    id: profile-screen
+    attributes:
+      label: Profile screen
+      options:
+        - WordPress profile
+        - WP User Profiles
+        - Users list
+        - Not applicable
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Include taxonomy registration details and sanitized logs. Never include credentials or personal data.
