@@ -13,6 +13,12 @@ table.user-groups tfoot td.check-column,
 table.user-groups .inactive th.check-column{
 	padding-left: 6px;
 }
+table.user-groups .column-selection {
+	width: 2.2em;
+}
+table.user-groups tbody td.column-selection {
+	padding-left: 9px;
+}
 table.user-groups tbody th.check-column,
 table.user-groups tbody {
 	padding: 12px 0 0 2px;
@@ -83,6 +89,9 @@ table.user-groups tbody tr:last-of-type th {
 }
 
 table.user-groups .active th.check-column {
+	border-left: 4px solid #00a0d2;
+}
+table.user-groups .active td.column-selection {
 	border-left: 4px solid #00a0d2;
 }
 

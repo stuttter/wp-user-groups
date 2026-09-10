@@ -61,4 +61,47 @@ final class UserTaxonomyTest extends TestCase {
 		$this->assertStringContainsString( 'name="wp_user_taxonomy_user-group"', $html );
 		$this->assertStringContainsString( '>Editors<', $html );
 	}
+
+	public function test_table_uses_taxonomy_column_filters(): void {
+		$GLOBALS['wpug_test']['returns']['current_user_can']  = false;
+		$GLOBALS['wpug_test']['returns']['is_object_in_term'] = false;
+		$GLOBALS['wpug_test']['callbacks']['apply_filters:manage_edit-user-group_columns'] = static function ( $columns ) {
+			$columns['favorite_color'] = 'Favorite color';
+			return $columns;
+		};
+		$GLOBALS['wpug_test']['callbacks']['apply_filters:manage_user-group_custom_column'] = static function ( $display, $column_name, $term_id ) {
+			return 'favorite_color' === $column_name ? "Color for {$term_id}" : $display;
+		};
+		$term = (object) array( 'term_id' => 8, 'slug' => 'editors', 'name' => 'Editors', 'description' => '', 'count' => 3 );
+		$tax  = (object) array( 'name' => 'user-group', 'labels' => (object) array( 'not_found' => 'No groups found' ) );
+
+		$html = $this->taxonomy()->render_table( (object) array( 'ID' => 7 ), $tax, array( $term ) );
+
+		$this->assertStringContainsString( '>Favorite color<', $html );
+		$this->assertStringContainsString( '>Color for 8<', $html );
+	}
+
+	public function test_exclusive_table_uses_radios_without_select_all(): void {
+		$GLOBALS['wpug_test']['returns']['current_user_can']  = false;
+		$GLOBALS['wpug_test']['returns']['is_object_in_term'] = false;
+		$term = (object) array( 'term_id' => 8, 'slug' => 'editors', 'name' => 'Editors', 'description' => '', 'count' => 3 );
+		$tax  = (object) array( 'name' => 'user-group', 'labels' => (object) array( 'not_found' => 'No groups found' ) );
+
+		$html = $this->taxonomy( array( 'exclusive' => true ) )->render_table( (object) array( 'ID' => 7 ), $tax, array( $term ) );
+
+		$this->assertStringContainsString( 'type="radio"', $html );
+		$this->assertStringNotContainsString( 'cb-select-all-', $html );
+	}
+
+	public function test_managed_table_has_no_relationship_inputs_for_non_administrators(): void {
+		$GLOBALS['wpug_test']['returns']['current_user_can']  = false;
+		$GLOBALS['wpug_test']['returns']['is_object_in_term'] = true;
+		$term = (object) array( 'term_id' => 8, 'slug' => 'editors', 'name' => 'Editors', 'description' => '', 'count' => 3 );
+		$tax  = (object) array( 'name' => 'user-group', 'labels' => (object) array( 'not_found' => 'No groups found' ) );
+
+		$html = $this->taxonomy( array( 'managed' => true ) )->render_table( (object) array( 'ID' => 7 ), $tax, array( $term ) );
+
+		$this->assertStringNotContainsString( 'name="user-group[]"', $html );
+		$this->assertStringContainsString( 'name="wp_user_taxonomy_user-group"', $html );
+	}
 }
