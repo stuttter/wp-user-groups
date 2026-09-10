@@ -1,0 +1,17 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  plugin:
+    uses: stuttter/.github/.github/workflows/wordpress-plugin-ci.yml@main
+    with:
+      php-versions: '["7.2", "7.4", "8.0", "8.2", "8.4"]'
