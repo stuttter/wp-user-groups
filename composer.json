@@ -5,7 +5,10 @@
   "type": "wordpress-plugin",
   "require": {
     "php": ">=7.2",
-    "composer/installers": "^1.0"
+    "composer/installers": "^1.12 || ^2.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.6"
   },
   "license": "GPL-2.0-or-later",
   "authors": [
@@ -13,5 +16,19 @@
       "name": "John James Jacoby",
       "email": "johnjamesjacoby@me.com"
     }
-  ]
+  ],
+  "autoload-dev": {
+    "classmap": [
+      "tests/"
+    ]
+  },
+  "scripts": {
+    "test": "phpunit"
+  },
+  "config": {
+    "allow-plugins": {
+      "composer/installers": true
+    },
+    "sort-packages": true
+  }
 }
