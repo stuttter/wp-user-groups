@@ -1,0 +1,36 @@
+name: Feature request
+description: Propose a focused improvement to WP User Groups.
+title: "Enhancement: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem should this solve?
+      description: Describe the user-facing need before proposing an implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+      description: Describe the observable behavior and compatibility expectations.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Affected interface
+      options:
+        - User profiles
+        - Users list
+        - Developer API
+        - Multiple interfaces
+        - Unsure
+    validations:
+      required: true
