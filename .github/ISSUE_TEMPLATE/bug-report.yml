@@ -40,9 +40,9 @@ body:
     validations:
       required: true
   - type: dropdown
-    id: profile-screen
+    id: affected-interface
     attributes:
-      label: Profile screen
+      label: Affected interface
       options:
         - WordPress profile
         - WP User Profiles
