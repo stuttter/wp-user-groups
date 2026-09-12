@@ -7,7 +7,7 @@ License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 License:           GPLv2 or later
 Contributors:      johnjamesjacoby
 Tags:              user, profile, group, taxonomy, term
-Requires PHP:      7.2
+Requires PHP:      7.4
 Requires at least: 5.2
 Tested up to:      7.1
 Stable tag:        2.6.0
