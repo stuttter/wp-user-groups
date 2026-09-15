@@ -326,8 +326,9 @@ class WP_User_Taxonomy {
 		}
 
 		// Get the terms of the taxonomy.
-		$terms = get_terms( $this->taxonomy, array(
-			'hide_empty' => false
+		$terms = get_terms( array(
+			'taxonomy'   => $this->taxonomy,
+			'hide_empty' => false,
 		) );
 
 		// Maybe add the metabox
@@ -473,8 +474,9 @@ class WP_User_Taxonomy {
 		}
 
 		// Get the terms of the taxonomy.
-		$terms = get_terms( $this->taxonomy, array(
-			'hide_empty' => false
+		$terms = get_terms( array(
+			'taxonomy'   => $this->taxonomy,
+			'hide_empty' => false,
 		) ); ?>
 
 		<?php
@@ -657,21 +659,37 @@ class WP_User_Taxonomy {
 			'menu_name'                  => $this->tax_plural,
 			'name'                       => $this->tax_plural,
 			'singular_name'              => $this->tax_singular,
+			/* translators: %s: plural taxonomy label. */
 			'search_items'               => sprintf( __( 'Search %s', 'wp-user-groups' ),                $this->tax_plural ),
+			/* translators: %s: plural taxonomy label. */
 			'popular_items'              => sprintf( __( 'Popular %s', 'wp-user-groups' ),               $this->tax_plural ),
+			/* translators: %s: plural taxonomy label. */
 			'all_items'                  => sprintf( __( 'All %s', 'wp-user-groups' ),                   $this->tax_plural ),
+			/* translators: %s: singular taxonomy label. */
 			'parent_item'                => sprintf( __( 'Parent %s', 'wp-user-groups' ),                $this->tax_singular ),
+			/* translators: %s: singular taxonomy label. */
 			'parent_item_colon'          => sprintf( __( 'Parent %s:', 'wp-user-groups' ),               $this->tax_singular ),
+			/* translators: %s: singular taxonomy label. */
 			'edit_item'                  => sprintf( __( 'Edit %s', 'wp-user-groups' ),                  $this->tax_singular ),
+			/* translators: %s: singular taxonomy label. */
 			'view_item'                  => sprintf( __( 'View %s', 'wp-user-groups' ),                  $this->tax_singular ),
+			/* translators: %s: singular taxonomy label. */
 			'update_item'                => sprintf( __( 'Update %s', 'wp-user-groups' ),                $this->tax_singular ),
+			/* translators: %s: singular taxonomy label. */
 			'add_new_item'               => sprintf( __( 'Add New %s', 'wp-user-groups' ),               $this->tax_singular ),
+			/* translators: %s: singular taxonomy label. */
 			'new_item_name'              => sprintf( __( 'New %s Name', 'wp-user-groups' ),              $this->tax_singular ),
+			/* translators: %s: lowercase plural taxonomy label. */
 			'separate_items_with_commas' => sprintf( __( 'Separate %s with commas', 'wp-user-groups' ),  $this->tax_plural_low ),
+			/* translators: %s: lowercase plural taxonomy label. */
 			'add_or_remove_items'        => sprintf( __( 'Add or remove %s', 'wp-user-groups' ),         $this->tax_plural_low ),
+			/* translators: %s: lowercase plural taxonomy label. */
 			'choose_from_most_used'      => sprintf( __( 'Choose from most used %s', 'wp-user-groups' ), $this->tax_plural_low ),
+			/* translators: %s: lowercase plural taxonomy label. */
 			'not_found'                  => sprintf( __( 'No %s found', 'wp-user-groups' ),              $this->tax_plural_low ),
+			/* translators: %s: singular taxonomy label. */
 			'no_item'                    => sprintf( __( 'No %s', 'wp-user-groups' ),                    $this->tax_singular ),
+			/* translators: %s: lowercase plural taxonomy label. */
 			'no_items'                   => sprintf( __( 'No %s', 'wp-user-groups' ),                    $this->tax_plural_low )
 		) );
 	}
@@ -741,15 +759,18 @@ class WP_User_Taxonomy {
 
 		// Get taxonomy & terms
 		$tax   = get_taxonomy( $this->taxonomy );
-		$terms = get_terms( $this->taxonomy, array(
-			'hide_empty' => false
+		$terms = get_terms( array(
+			'taxonomy'   => $this->taxonomy,
+			'hide_empty' => false,
 		) );
 
 		// Add to bulk actions array
 		if ( ! empty( $terms ) ) {
 			foreach ( $terms as $term ) {
-				$actions[ "add-{$term->slug}-{$this->taxonomy}"    ] = sprintf( esc_html__( 'Add to %s %s',      'wp-user-groups' ), $term->name, $tax->labels->singular_name );
-				$actions[ "remove-{$term->slug}-{$this->taxonomy}" ] = sprintf( esc_html__( 'Remove from %s %s', 'wp-user-groups' ), $term->name, $tax->labels->singular_name );
+				/* translators: 1: term name, 2: singular taxonomy label. */
+				$actions[ "add-{$term->slug}-{$this->taxonomy}"    ] = sprintf( esc_html__( 'Add to %1$s %2$s',      'wp-user-groups' ), $term->name, $tax->labels->singular_name );
+				/* translators: 1: term name, 2: singular taxonomy label. */
+				$actions[ "remove-{$term->slug}-{$this->taxonomy}" ] = sprintf( esc_html__( 'Remove from %1$s %2$s', 'wp-user-groups' ), $term->name, $tax->labels->singular_name );
 			}
 		}
 
@@ -823,8 +844,9 @@ class WP_User_Taxonomy {
 	public function handle_bulk_actions( $redirect_to = '', $action = '', $user_ids = array() ) {
 
 		// Get terms
-		$terms = get_terms( $this->taxonomy, array(
-			'hide_empty' => false
+		$terms = get_terms( array(
+			'taxonomy'   => $this->taxonomy,
+			'hide_empty' => false,
 		) );
 
 		// Bail if no users or terms to work with
@@ -951,16 +973,24 @@ class WP_User_Taxonomy {
 		// No users
 		if ( 0 === $count ) {
 			$type = 'warning';
-			$text = ( 'add' === $action )
-				? sprintf( __( 'No users added to the "%s" %s.',     'wp-user-groups' ), $term, $tax )
-				: sprintf( __( 'No users removed from the "%s" %s.', 'wp-user-groups' ), $term, $tax );
+			if ( 'add' === $action ) {
+				/* translators: 1: term name, 2: singular taxonomy label. */
+				$text = sprintf( __( 'No users added to the "%1$s" %2$s.', 'wp-user-groups' ), $term, $tax );
+			} else {
+				/* translators: 1: term name, 2: singular taxonomy label. */
+				$text = sprintf( __( 'No users removed from the "%1$s" %2$s.', 'wp-user-groups' ), $term, $tax );
+			}
 
 		// Add/remove
 		} else {
 			$type = 'success';
-			$text = ( 'add' === $action )
-				? sprintf( _n( '%s user added to the "%s" %s.',     '%s users added to the "%s" %s.',     $count, 'wp-user-groups' ), number_format_i18n( $count ), $term, $tax )
-				: sprintf( _n( '%s user removed from the "%s" %s.', '%s users removed from the "%s" %s.', $count, 'wp-user-groups' ), number_format_i18n( $count ), $term, $tax );
+			if ( 'add' === $action ) {
+				/* translators: 1: number of users, 2: term name, 3: singular taxonomy label. */
+				$text = sprintf( _n( '%1$s user added to the "%2$s" %3$s.', '%1$s users added to the "%2$s" %3$s.', $count, 'wp-user-groups' ), number_format_i18n( $count ), $term, $tax );
+			} else {
+				/* translators: 1: number of users, 2: term name, 3: singular taxonomy label. */
+				$text = sprintf( _n( '%1$s user removed from the "%2$s" %3$s.', '%1$s users removed from the "%2$s" %3$s.', $count, 'wp-user-groups' ), number_format_i18n( $count ), $term, $tax );
+			}
 		}
 
 		// Output message
@@ -984,7 +1014,7 @@ class WP_User_Taxonomy {
 	public function list_table_views( $views = array() ) {
 
 		// Get tax & terms
-		$terms   = get_terms( $this->taxonomy, array( 'hide_empty' => false ) );
+		$terms   = get_terms( array( 'taxonomy' => $this->taxonomy, 'hide_empty' => false ) );
 		$slugs   = wp_list_pluck( $terms, 'slug' );
 		$current = isset( $_GET[ $this->taxonomy ] ) ? sanitize_key( $_GET[ $this->taxonomy ] ) : '';
 		$viewing = array_search( $current, $slugs, true );
@@ -999,7 +1029,8 @@ class WP_User_Taxonomy {
 				'taxonomy' => $this->taxonomy,
 				'tag_ID'   => $terms[ $viewing ]->term_id,
 			);
-			$url = add_query_arg( $args, $edit ); ?>
+			$url       = add_query_arg( $args, $edit );
+			$term_link = '<a href="' . esc_url( $url ) . '">' . esc_html( $terms[ $viewing ]->name ) . '</a>'; ?>
 
 			<div id="<?php echo esc_attr( $this->taxonomy ); ?>-header">
 				<h1>
@@ -1015,9 +1046,12 @@ class WP_User_Taxonomy {
 
 					<?php endif; ?>
 
-					<span class="subtitle"><?php printf( esc_html__( 'Viewing users of %s: %s', 'wp-user-groups' ), $this->tax_singular_low, '<a href="' . esc_url( $url ) . '">' . $terms[ $viewing ]->name . '</a>' ); ?></span>
+					<span class="subtitle"><?php
+						/* translators: 1: singular taxonomy label, 2: linked term name. */
+						printf( esc_html__( 'Viewing users of %1$s: %2$s', 'wp-user-groups' ), esc_html( $this->tax_singular_low ), wp_kses_post( $term_link ) );
+					?></span>
 				</h1>
-				<?php echo wpautop( $terms[ $viewing ]->description ); ?>
+				<?php echo wp_kses_post( wpautop( $terms[ $viewing ]->description ) ); ?>
 			</div>
 			<div class="clear"></div>
 

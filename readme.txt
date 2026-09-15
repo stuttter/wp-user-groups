@@ -88,6 +88,7 @@ No. This is best left to plugins that choose to integrate with this plugin.
 * Replace the user relationship checkbox matrix with a native WordPress list table
 * Require PHP 7.4 and test the supported PHP versions
 * Add automated tests, static analysis, and release validation
+* Correct deprecated term queries, translation placeholders, and escaped output
 * Add contributor documentation and WordPress.org metadata
 
 = [2.6.0] - 2026/09/09 =
