@@ -6,6 +6,10 @@
 
 defined( 'ABSPATH' ) || exit( 1 );
 
+if ( ! function_exists( 'set_current_screen' ) ) {
+	require_once ABSPATH . 'wp-admin/includes/screen.php';
+}
+
 function wpug_smoke_assert( $condition, $message ) {
 	if ( ! $condition ) {
 		throw new RuntimeException( $message );

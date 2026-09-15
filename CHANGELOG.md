@@ -1,3 +1,10 @@
+## 2.7.0 (2026-09-15)
+
+* Replace the user relationship checkbox matrix with a native WordPress list table
+* Require PHP 7.4 and test the supported PHP versions
+* Add automated tests, static analysis, and release validation
+* Add contributor documentation and WordPress.org metadata
+
 ## 2.6.0 (2026-09-09)
 
 * Avoid PHP 8.2 deprecation notices while preserving public label properties
