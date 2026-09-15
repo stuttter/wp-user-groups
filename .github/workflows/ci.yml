@@ -1,3 +1,4 @@
+# Managed by stuttter/.github fleet standards. Do not edit locally.
 name: CI
 
 on:
@@ -14,7 +15,7 @@ jobs:
   plugin:
     uses: stuttter/.github/.github/workflows/wordpress-plugin-ci.yml@main
     with:
-      php-versions: '["7.2", "7.4", "8.0", "8.2", "8.4"]'
+      php-versions: '["7.4", "8.0", "8.2", "8.4"]'
 
   integration:
     name: WordPress ${{ matrix.wordpress }} / PHP ${{ matrix.php }}
@@ -80,4 +81,4 @@ jobs:
             --skip-email
           ln -s "${GITHUB_WORKSPACE}" "${wordpress_root}/wp-content/plugins/wp-user-groups"
           wp plugin activate wp-user-groups --path="${wordpress_root}"
-          wp eval-file "${GITHUB_WORKSPACE}/tests/integration/ListTableSmoke.php" --path="${wordpress_root}"
+          wp eval-file "${GITHUB_WORKSPACE}/tests/integration/smoke.php" --path="${wordpress_root}"
