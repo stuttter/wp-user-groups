@@ -10,6 +10,12 @@ class TestableUserTaxonomy extends WP_User_Taxonomy {
 		$this->table_contents( $user, $taxonomy, $terms );
 		return (string) ob_get_clean();
 	}
+
+	public function render_list_table_views(): string {
+		ob_start();
+		$this->list_table_views();
+		return (string) ob_get_clean();
+	}
 }
 
 final class CustomRowActionsUserTaxonomy extends TestableUserTaxonomy {
@@ -21,6 +27,7 @@ final class CustomRowActionsUserTaxonomy extends TestableUserTaxonomy {
 final class UserTaxonomyTest extends TestCase {
 	protected function setUp(): void {
 		$GLOBALS['wpug_test'] = array();
+		$_GET = array();
 	}
 
 	private function taxonomy( array $args = array() ): TestableUserTaxonomy {
@@ -28,6 +35,7 @@ final class UserTaxonomyTest extends TestCase {
 		$taxonomy   = $reflection->newInstanceWithoutConstructor();
 		$taxonomy->taxonomy = 'user-group';
 		$taxonomy->args     = $args;
+		$taxonomy->tax_singular_low = 'group';
 		return $taxonomy;
 	}
 
@@ -126,5 +134,24 @@ final class UserTaxonomyTest extends TestCase {
 
 		$this->assertStringNotContainsString( 'name="user-group[]"', $html );
 		$this->assertStringContainsString( 'name="wp_user_taxonomy_user-group"', $html );
+	}
+
+	public function test_list_table_view_sanitizes_term_heading_and_description(): void {
+		$GLOBALS['wpug_test']['returns']['current_user_can'] = false;
+		$GLOBALS['wpug_test']['returns']['get_terms'] = array(
+			(object) array(
+				'term_id'    => 8,
+				'slug'       => 'editors',
+				'name'       => 'Editors <script>alert("name")</script>',
+				'description' => '<strong>Trusted</strong><script>alert("description")</script>',
+			),
+		);
+		$_GET['user-group'] = 'editors';
+
+		$html = $this->taxonomy()->render_list_table_views();
+
+		$this->assertStringContainsString( '<a href="https://example.test/wp-admin/edit-tags.php?action=edit&amp;taxonomy=user-group&amp;tag_ID=8">Editors &lt;script&gt;alert(&quot;name&quot;)&lt;/script&gt;</a>', $html );
+		$this->assertStringContainsString( '<p><strong>Trusted</strong></p>', $html );
+		$this->assertStringNotContainsString( '<script>', $html );
 	}
 }

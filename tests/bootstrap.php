@@ -41,8 +41,16 @@ function checked( $checked, $current = true, $display = true ) {
 }
 function admin_url( $path ) { return 'https://example.test/wp-admin/' . ltrim( $path, '/' ); }
 function add_query_arg( $args, $url ) { return $url . '?' . http_build_query( $args ); }
-function esc_url( $url ) { return $url; }
+function esc_url( $url ) { return htmlspecialchars( (string) $url, ENT_QUOTES, 'UTF-8' ); }
 function wp_nonce_field( $action, $name ) { echo '<input type="hidden" name="' . esc_attr( $name ) . '" value="nonce" />'; }
+function wp_list_pluck( $items, $field ) { return array_map( static function ( $item ) use ( $field ) { return $item->$field; }, $items ); }
+function sanitize_key( $key ) { return strtolower( preg_replace( '/[^a-z0-9_\-]/', '', (string) $key ) ); }
+function is_multisite() { return false; }
+function wpautop( $text ) { return '<p>' . $text . '</p>'; }
+function wp_kses_post( $html ) {
+	$html = preg_replace( '#<script\b[^>]*>.*?</script>#is', '', (string) $html );
+	return strip_tags( $html, '<a><p><strong><em><br>' );
+}
 
 class WP_Error {}
 
