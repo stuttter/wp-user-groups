@@ -12,6 +12,8 @@ Requires at least: 5.2
 Tested up to:      7.1
 Stable tag:        2.6.0
 
+Group WordPress users with custom taxonomies and terms.
+
 == Description ==
 
 WP User Groups allows users to be categorized using custom taxonomies & terms.
