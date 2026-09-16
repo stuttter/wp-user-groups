@@ -10,7 +10,7 @@ Tags:              user, profile, group, taxonomy, term
 Requires PHP:      7.4
 Requires at least: 6.4
 Tested up to:      7.1
-Stable tag:        2.7.0
+Stable tag:        2.7.1
 
 Group WordPress users with custom taxonomies and terms.
 
@@ -83,6 +83,9 @@ No. This is best left to plugins that choose to integrate with this plugin.
 * Development: https://github.com/stuttter/wp-user-groups/discussions
 
 == Changelog ==
+
+= [2.7.1] - 2026/09/16 =
+* Require WordPress 6.4 or newer
 
 = [2.7.0] - 2026/09/15 =
 * Replace the user relationship checkbox matrix with a native WordPress list table
