@@ -5,7 +5,7 @@ Describe the observable change and why it belongs in WP User Groups.
 ## Risk and compatibility
 
 - [ ] Public functions, classes, hooks, filters, and taxonomy behavior remain compatible.
-- [ ] PHP 7.4 and WordPress 5.2 compatibility are preserved.
+- [ ] PHP 7.4 and WordPress 6.4 compatibility are preserved.
 - [ ] Native profiles, WP User Profiles, and multisite impact are described where applicable.
 - [ ] Capability, nonce, dependency, automation, and release implications are identified.
 
