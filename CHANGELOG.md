@@ -1,3 +1,7 @@
+## Unreleased
+
+* Require WordPress 6.4 or newer
+
 ## 2.7.0 (2026-09-15)
 
 * Replace the user relationship checkbox matrix with a native WordPress list table
