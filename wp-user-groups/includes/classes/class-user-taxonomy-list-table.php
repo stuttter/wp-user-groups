@@ -59,7 +59,7 @@ class WP_User_Taxonomy_List_Table extends WP_List_Table {
 	 *
 	 * @since 2.7.0
 	 *
-	 * @var array
+	 * @var array<int, bool|WP_Error>
 	 */
 	protected $term_relationships = array();
 
@@ -71,13 +71,13 @@ class WP_User_Taxonomy_List_Table extends WP_List_Table {
 	 * @param WP_User_Taxonomy $user_taxonomy User taxonomy controller.
 	 * @param WP_User          $user          User being edited.
 	 * @param WP_Taxonomy      $taxonomy      Registered taxonomy object.
-	 * @param array            $terms         Terms to display.
+	 * @param mixed            $terms         Terms to display.
 	 */
 	public function __construct( $user_taxonomy, $user, $taxonomy, $terms = array() ) {
 		$this->user_taxonomy    = $user_taxonomy;
 		$this->user             = $user;
 		$this->taxonomy         = $taxonomy;
-		$this->items            = is_array( $terms ) ? $terms : array();
+		$this->items              = is_array( $terms ) ? $terms : array();
 		$this->has_bulk_selection = ! $user_taxonomy->is_managed() && ! $user_taxonomy->is_exclusive();
 
 		parent::__construct( array(
@@ -91,6 +91,8 @@ class WP_User_Taxonomy_List_Table extends WP_List_Table {
 	 * Prepare the fixed set of terms and column metadata.
 	 *
 	 * @since 2.7.0
+	 *
+	 * @return void
 	 */
 	public function prepare_items() {
 		$columns = $this->get_columns();
@@ -109,7 +111,7 @@ class WP_User_Taxonomy_List_Table extends WP_List_Table {
 	 *
 	 * @since 2.7.0
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	public function get_columns() {
 		$selection_column = $this->has_bulk_selection ? 'cb' : 'selection';
@@ -138,6 +140,7 @@ class WP_User_Taxonomy_List_Table extends WP_List_Table {
 	 * @since 2.7.0
 	 *
 	 * @param string $which Navigation position.
+	 * @return void
 	 */
 	protected function display_tablenav( $which ) {}
 
@@ -146,7 +149,7 @@ class WP_User_Taxonomy_List_Table extends WP_List_Table {
 	 *
 	 * @since 2.7.0
 	 *
-	 * @return array
+	 * @return array<int, string>
 	 */
 	protected function get_table_classes() {
 		return array( 'widefat', 'fixed', 'striped', 'user-groups' );
@@ -158,6 +161,7 @@ class WP_User_Taxonomy_List_Table extends WP_List_Table {
 	 * @since 2.7.0
 	 *
 	 * @param WP_Term $term Term being displayed.
+	 * @return void
 	 */
 	public function single_row( $term ) {
 		$active = $this->is_term_active( $term );
@@ -235,7 +239,7 @@ class WP_User_Taxonomy_List_Table extends WP_List_Table {
 			$this->term_relationships[ $term_id ] = is_object_in_term( $this->user->ID, $this->taxonomy->name, $term->slug );
 		}
 
-		return $this->term_relationships[ $term_id ];
+		return true === $this->term_relationships[ $term_id ];
 	}
 
 	/**
@@ -298,6 +302,7 @@ class WP_User_Taxonomy_List_Table extends WP_List_Table {
 	 * Display the taxonomy-specific empty state.
 	 *
 	 * @since 2.7.0
+	 * @return void
 	 */
 	public function no_items() {
 		echo esc_html( $this->taxonomy->labels->not_found );
