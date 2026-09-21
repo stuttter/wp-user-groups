@@ -45,7 +45,7 @@ class WP_User_Taxonomy {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @var array
+	 * @var array<string, mixed>
 	 */
 	public $args = array();
 
@@ -54,7 +54,7 @@ class WP_User_Taxonomy {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @var array
+	 * @var array<string, string>
 	 */
 	public $labels = array();
 
@@ -63,7 +63,7 @@ class WP_User_Taxonomy {
 	 *
 	 * @since 2.2.0
 	 *
-	 * @var array
+	 * @var array<string, string>
 	 */
 	public $caps = array();
 
@@ -110,9 +110,9 @@ class WP_User_Taxonomy {
 	 *
 	 * @param  string  $taxonomy
 	 * @param  string  $slug
-	 * @param  array   $args
-	 * @param  array   $labels
-	 * @param  array   $caps
+	 * @param array<string, mixed>  $args
+	 * @param array<string, string> $labels
+	 * @param array<string, string> $caps
 	 */
 	public function __construct( $taxonomy = '', $slug = '', $args = array(), $labels = array(), $caps = array() ) {
 
@@ -121,7 +121,7 @@ class WP_User_Taxonomy {
 			return;
 		}
 
-		/** Class Variables ***************************************************/
+			/** Class Variables */
 
 		// Set the taxonomy
 		$this->taxonomy = sanitize_key( $taxonomy );
@@ -150,6 +150,7 @@ class WP_User_Taxonomy {
 	 * Hook in to actions & filters
 	 *
 	 * @since 0.1.1
+	 * @return void
 	 */
 	protected function hooks() {
 
@@ -199,11 +200,16 @@ class WP_User_Taxonomy {
 	 * Add the administration page for this taxonomy
 	 *
 	 * @since 0.1.0
+	 *
+	 * @return void
 	 */
 	public function add_admin_page() {
 
 		// Setup the URL
 		$tax = get_taxonomy( $this->taxonomy );
+			if ( false === $tax ) {
+				return;
+			}
 
 		// No UI
 		if ( false === $tax->show_ui ) {
@@ -235,6 +241,7 @@ class WP_User_Taxonomy {
 	 * @since 0.1.0
 	 *
 	 * @global string $plugin_page
+	 * @return void
 	 */
 	public function admin_menu_highlight() {
 		global $plugin_page;
@@ -249,6 +256,8 @@ class WP_User_Taxonomy {
 	 * Filter the body class
 	 *
 	 * @since 0.1.0
+	 *
+	 * @return void
 	 */
 	public function admin_load() {
 		add_filter( 'admin_body_class', array( $this, 'admin_body_class' ) );
@@ -277,6 +286,7 @@ class WP_User_Taxonomy {
 	 * Stylize custom columns
 	 *
 	 * @since 0.1.0
+	 * @return void
 	 */
 	public function admin_head() {
 
@@ -298,6 +308,8 @@ class WP_User_Taxonomy {
 	 * Metaboxes for profile sections
 	 *
 	 * @since 0.1.6
+	 * @param string $type Profile screen type.
+	 * @return void
 	 */
 	public function add_meta_box( $type = '' ) {
 
@@ -319,6 +331,10 @@ class WP_User_Taxonomy {
 		if ( ! $this->can_assign( $user_id ) ) {
 			return;
 		}
+
+			if ( false === $tax ) {
+				return;
+			}
 
 		// Bail if no UI for taxonomy
 		if ( false === $tax->show_ui ) {
@@ -342,7 +358,7 @@ class WP_User_Taxonomy {
 			array(
 				'user_id' => $user_id,
 				'tax'     => $tax,
-				'terms'   => $terms
+				'terms'   => $terms,
 			)
 		);
 	}
@@ -353,6 +369,7 @@ class WP_User_Taxonomy {
 	 * @since 0.1.0
 	 *
 	 * @param int $user_id
+	 * @return void|false
 	 */
 	public function save_terms_for_user( $user_id = 0 ) {
 
@@ -394,7 +411,9 @@ class WP_User_Taxonomy {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @param int $user_id
+	 * @param array<int, int> $terms Term taxonomy IDs.
+	 * @param string          $taxonomy Taxonomy name.
+	 * @return void
 	 */
 	public function update_term_user_count( $terms = array(), $taxonomy = '' ) {
 
@@ -403,8 +422,10 @@ class WP_User_Taxonomy {
 			$taxonomy = $this->taxonomy;
 		}
 
-		// Update counts
-		_update_generic_term_count( $terms, $taxonomy );
+			$taxonomy_object = get_taxonomy( $taxonomy );
+			if ( false !== $taxonomy_object ) {
+				_update_generic_term_count( $terms, $taxonomy_object );
+			}
 	}
 
 	/**
@@ -412,8 +433,8 @@ class WP_User_Taxonomy {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @param   array $columns
-	 * @return  array
+	 * @param array<string, string> $columns
+	 * @return array<string, string>
 	 */
 	public function manage_edit_users_column( $columns = array() ) {
 
@@ -432,15 +453,19 @@ class WP_User_Taxonomy {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @param string $display
+	 * @param string|false $display
 	 * @param string $column
-	 * @param string $term_id
+	 * @param int          $term_id
+	 * @return string|false
 	 */
 	public function manage_custom_column( $display = false, $column = '', $term_id = 0 ) {
 
 		// Users column gets custom content
 		if ( 'users' === $column ) {
-			$term    = get_term( $term_id, $this->taxonomy );
+			$term = get_term( $term_id, $this->taxonomy );
+				if ( ! $term instanceof WP_Term ) {
+					return $display;
+				}
 			$args    = array( $this->taxonomy => $term->slug );
 			$users   = admin_url( 'users.php' );
 			$url     = add_query_arg( $args, $users );
@@ -457,16 +482,20 @@ class WP_User_Taxonomy {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @param  mixed  $user
+	 * @param WP_User|false $user
+	 * @return void
 	 */
 	public function edit_user_relationships( $user = false ) {
 
 		// Bail if current user cannot assign terms to this user for this taxonomy
-		if ( ! $this->can_assign( $user->ID ) ) {
+			if ( ! $user instanceof WP_User || ! $this->can_assign( $user->ID ) ) {
 			return;
 		}
 
 		$tax = get_taxonomy( $this->taxonomy );
+			if ( false === $tax ) {
+				return;
+			}
 
 		// Bail if no UI for taxonomy
 		if ( false === $tax->show_ui ) {
@@ -477,7 +506,11 @@ class WP_User_Taxonomy {
 		$terms = get_terms( array(
 			'taxonomy'   => $this->taxonomy,
 			'hide_empty' => false,
-		) ); ?>
+		) );
+			if ( is_wp_error( $terms ) ) {
+				return;
+			}
+			?>
 
 		<?php
 
@@ -515,8 +548,14 @@ class WP_User_Taxonomy {
 	 * Output metabox for user profiles
 	 *
 	 * @since 0.1.6
+	 * @param WP_User                                                           $user User being edited.
+	 * @param array{args?: array{tax: WP_Taxonomy, terms: array<int, WP_Term>}} $args Metabox arguments.
+	 * @return void
 	 */
 	public function user_profile_metabox( $user = null, $args = array() ) {
+			if ( ! $user instanceof WP_User || empty( $args['args'] ) ) {
+				return;
+			}
 		$this->table_contents( $user, $args['args']['tax'], $args['args']['terms'] );
 	}
 
@@ -524,6 +563,10 @@ class WP_User_Taxonomy {
 	 * Output metabox contents
 	 *
 	 * @since 0.1.6
+	 * @param WP_User             $user User being edited.
+	 * @param WP_Taxonomy         $tax Taxonomy object.
+	 * @param array<int, WP_Term> $terms Terms to display.
+	 * @return void
 	 */
 	protected function table_contents( $user, $tax, $terms ) {
 		$list_table = new WP_User_Taxonomy_List_Table( $this, $user, $tax, $terms );
@@ -539,10 +582,15 @@ class WP_User_Taxonomy {
 	 *
 	 * @since 0.1.1
 	 *
-	 * @param object $term
+	 * @param WP_Taxonomy|array{} $tax Taxonomy object.
+	 * @param WP_Term|false       $term Term object.
+	 * @return string
 	 */
 	protected function row_actions( $tax = array(), $term = false ) {
 		$actions = array();
+			if ( ! $tax instanceof WP_Taxonomy || ! $term instanceof WP_Term ) {
+				return '';
+			}
 
 		// List users in group
 		if ( current_user_can( 'list_users' ) ) {
@@ -554,7 +602,12 @@ class WP_User_Taxonomy {
 
 		// Edit term
 		if ( current_user_can( 'edit_term', $term->term_id ) ) {
-			$args      = array( 'action' => 'edit', 'taxonomy' => $tax->name, 'tag_ID' => $term->term_id, 'post_type' => 'post' );
+			$args = array(
+				'action'    => 'edit',
+				'taxonomy'  => $tax->name,
+				'tag_ID'    => $term->term_id,
+				'post_type' => 'post',
+			);
 			$edit_tags = admin_url( 'edit-tags.php' );
 			$url       = add_query_arg( $args, $edit_tags );
 			$actions[] = '<a href="' . esc_url( $url ) . '">' . esc_html__( 'Edit', 'wp-user-groups' ) . '</a>';
@@ -574,8 +627,8 @@ class WP_User_Taxonomy {
 	 *
 	 * @since 2.7.0
 	 *
-	 * @param object $tax  Taxonomy object.
-	 * @param object $term Term object.
+	 * @param WP_Taxonomy|array{} $tax  Taxonomy object.
+	 * @param WP_Term|false       $term Term object.
 	 * @return string
 	 */
 	public function get_term_row_actions( $tax = array(), $term = false ) {
@@ -607,6 +660,7 @@ class WP_User_Taxonomy {
 	 * @since 0.1.0
 	 *
 	 * @param int $user_id
+	 * @return void
 	 */
 	public function delete_term_relationships( $user_id = 0 ) {
 		wp_delete_object_term_relationships( $user_id, $this->taxonomy );
@@ -618,6 +672,7 @@ class WP_User_Taxonomy {
 	 * Register the taxonomy
 	 *
 	 * @since 0.1.0
+	 * @return void
 	 */
 	protected function register_user_taxonomy() {
 
@@ -633,11 +688,11 @@ class WP_User_Taxonomy {
 		 *
 		 * @param array  $defaults Default object types. 'user' by default.
 		 * @param string $taxonomy The current taxonomy
-		 * @param
+		 * @param array<string, mixed> $options Parsed taxonomy options.
 		 */
 		$objects = (array) apply_filters( 'wp_user_groups_taxonomy_objects', array(
 			'user'
-		) , $this->taxonomy, $options );
+		), $this->taxonomy, $options );
 
 		// Register the taxonomy
 		register_taxonomy(
@@ -652,7 +707,7 @@ class WP_User_Taxonomy {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	protected function parse_labels() {
 		return wp_parse_args( $this->labels, array(
@@ -699,7 +754,7 @@ class WP_User_Taxonomy {
 	 *
 	 * @since 2.2.0
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	protected function parse_caps() {
 		return wp_parse_args( $this->caps, array(
@@ -717,7 +772,7 @@ class WP_User_Taxonomy {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @return array
+	 * @return array<string, mixed>
 	 */
 	protected function parse_options() {
 		return wp_parse_args( $this->args, array(
@@ -751,9 +806,9 @@ class WP_User_Taxonomy {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array $actions
+	 * @param array<string, string> $actions
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	public function bulk_actions( $actions = array() ) {
 
@@ -765,7 +820,7 @@ class WP_User_Taxonomy {
 		) );
 
 		// Add to bulk actions array
-		if ( ! empty( $terms ) ) {
+			if ( false !== $tax && ! is_wp_error( $terms ) && ! empty( $terms ) ) {
 			foreach ( $terms as $term ) {
 				/* translators: 1: term name, 2: singular taxonomy label. */
 				$actions[ "add-{$term->slug}-{$this->taxonomy}"    ] = sprintf( esc_html__( 'Add to %1$s %2$s',      'wp-user-groups' ), $term->name, $tax->labels->singular_name );
@@ -783,7 +838,8 @@ class WP_User_Taxonomy {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array $actions
+	 * @param array<string, string> $actions
+	 * @return array<string, string>
 	 */
 	public function bulk_actions_sort( $actions = array() ) {
 
@@ -840,6 +896,10 @@ class WP_User_Taxonomy {
 	 * Handle bulk editing of users
 	 *
 	 * @since 1.0.0
+	 * @param string          $redirect_to Redirect URL.
+	 * @param string          $action Bulk action.
+	 * @param array<int, int> $user_ids User IDs.
+	 * @return string
 	 */
 	public function handle_bulk_actions( $redirect_to = '', $action = '', $user_ids = array() ) {
 
@@ -850,7 +910,7 @@ class WP_User_Taxonomy {
 		) );
 
 		// Bail if no users or terms to work with
-		if ( empty( $user_ids ) || empty( $terms ) ) {
+			if ( empty( $user_ids ) || empty( $terms ) || is_wp_error( $terms ) ) {
 			return $redirect_to;
 		}
 
@@ -887,7 +947,7 @@ class WP_User_Taxonomy {
 
 			// Get term slugs of user for this taxonomy
 			$terms        = wp_get_terms_for_user( $user_id, $this->taxonomy );
-			$update_terms = wp_list_pluck( $terms, 'slug' );
+				$update_terms = is_array( $terms ) ? wp_list_pluck( $terms, 'slug' ) : array();
 
 			// Adding
 			if ( 'add' === $type ) {
@@ -962,8 +1022,13 @@ class WP_User_Taxonomy {
 		}
 
 		// Get the labels
-		$tax    = get_taxonomy( $this->taxonomy )->labels->singular_name;
-		$term   = get_term_by( 'slug', $group, $this->taxonomy )->name;
+			$taxonomy_object = get_taxonomy( $this->taxonomy );
+			$term_object     = get_term_by( 'slug', $group, $this->taxonomy );
+			if ( false === $taxonomy_object || ! $term_object instanceof WP_Term ) {
+				return;
+			}
+			$tax  = $taxonomy_object->labels->singular_name;
+			$term = $term_object->name;
 
 		// Bail if term does not exist in taxonomy
 		if ( empty( $term ) ) {
@@ -1008,13 +1073,16 @@ class WP_User_Taxonomy {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @param  array $views
-	 * @return array
+	 * @param array<string, string> $views
+	 * @return array<string, string>
 	 */
 	public function list_table_views( $views = array() ) {
 
 		// Get tax & terms
-		$terms   = get_terms( array( 'taxonomy' => $this->taxonomy, 'hide_empty' => false ) );
+			$terms = get_terms( array( 'taxonomy' => $this->taxonomy, 'hide_empty' => false ) );
+			if ( is_wp_error( $terms ) ) {
+				return $views;
+			}
 		$slugs   = wp_list_pluck( $terms, 'slug' );
 		$current = isset( $_GET[ $this->taxonomy ] ) ? sanitize_key( $_GET[ $this->taxonomy ] ) : '';
 		$viewing = array_search( $current, $slugs, true );
@@ -1068,7 +1136,8 @@ class WP_User_Taxonomy {
 	 *
 	 * @global  string  $pagenow
 	 *
-	 * @param   object  $user_query
+	 * @param WP_User_Query $user_query
+	 * @return void
 	 */
 	public function pre_get_users( $user_query ) {
 		global $pagenow;
@@ -1088,7 +1157,10 @@ class WP_User_Taxonomy {
 
 		// Get terms
 		foreach ( $groups as $group ) {
-			$term     = get_term_by( 'slug', $group, $this->taxonomy );
+			$term = get_term_by( 'slug', $group, $this->taxonomy );
+				if ( ! $term instanceof WP_Term ) {
+					continue;
+				}
 			$user_ids = get_objects_in_term( $term->term_id, $this->taxonomy );
 		}
 
@@ -1106,10 +1178,13 @@ class WP_User_Taxonomy {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @param  object  $user_query
+	 * @param WP_User_Query|string $user_query
+	 * @return array<string, string>
 	 */
 	public function user_tax_query( $user_query = '' ) {
-		return get_tax_sql( $user_query->tax_query, $GLOBALS['wpdb']->users, 'ID' );
+			return is_object( $user_query ) && isset( $user_query->tax_query )
+			? get_tax_sql( $user_query->tax_query, $GLOBALS['wpdb']->users, 'ID' )
+			: array();
 	}
 
 	/**
@@ -1120,7 +1195,7 @@ class WP_User_Taxonomy {
 	 * @param  mixed  $user
 	 * @param  string $page
 	 *
-	 * @return string
+	 * @return string|false
 	 */
 	private function get_user_term_links( $user, $page = null ) {
 
@@ -1128,7 +1203,7 @@ class WP_User_Taxonomy {
 		$terms = wp_get_terms_for_user( $user, $this->taxonomy );
 
 		// Bail if user has no terms
-		if ( empty( $terms ) ) {
+			if ( empty( $terms ) || is_wp_error( $terms ) ) {
 			return false;
 		}
 
@@ -1156,7 +1231,7 @@ class WP_User_Taxonomy {
 	 *
 	 * @param  string $value
 	 * @param  string $column_name
-	 * @param  string $user_id
+	 * @param int    $user_id
 	 * @return string
 	 */
 	public function user_column_data( $value = '', $column_name = '', $user_id = 0 ) {
@@ -1186,14 +1261,17 @@ class WP_User_Taxonomy {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @param   array $defaults
+	 * @param array<string, string> $defaults
 	 *
-	 * @return  array
+	 * @return array<string, string>
 	 */
 	public function add_manage_users_columns( $defaults = array() ) {
 
 		// Get the taxonomy
 		$tax = get_taxonomy( $this->taxonomy );
+			if ( false === $tax ) {
+				return $defaults;
+			}
 
 		// Bail if no UI
 		if ( false === $tax->show_ui ) {
@@ -1224,6 +1302,7 @@ class WP_User_Taxonomy {
 	 * Output the nonce field for this user taxonomy table
 	 *
 	 * @since 2.1.0
+	 * @return void
 	 */
 	private function nonce_field() {
 		wp_nonce_field( $this->taxonomy, $this->get_nonce_key() );
@@ -1271,7 +1350,10 @@ class WP_User_Taxonomy {
 		$retval = false;
 
 		// Get the taxonomy
-		$tax    = get_taxonomy( $this->taxonomy );
+		$tax = get_taxonomy( $this->taxonomy );
+			if ( false === $tax ) {
+				return false;
+			}
 
 		// Check edit_user and assign
 		if ( current_user_can( 'edit_user', $user_id ) && current_user_can( $tax->cap->assign_terms ) ) {

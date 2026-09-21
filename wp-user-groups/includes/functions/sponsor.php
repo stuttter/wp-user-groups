@@ -32,8 +32,8 @@ add_action( 'admin_init', function() {
 /**
  * Filter plugin action links, and add a sponsorship link.
  *
- * @param array $actions
- * @return array
+ * @param array<string, string> $actions Plugin action links.
+ * @return array<string, string>
  */
 function filter_plugin_action_links( $actions = array() ) {
 

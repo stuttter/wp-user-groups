@@ -22,6 +22,7 @@ defined( 'ABSPATH' ) || exit;
  * Include the User Groups files
  *
  * @since 0.1.0
+ * @return void
  */
 function _wp_user_groups() {
 
