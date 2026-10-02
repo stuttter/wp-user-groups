@@ -156,5 +156,6 @@ class WP_List_Table {
 require_once dirname( __DIR__ ) . '/wp-user-groups/includes/functions/common.php';
 require_once dirname( __DIR__ ) . '/wp-user-groups/includes/functions/admin.php';
 require_once __DIR__ . '/class-wp-taxonomy.php';
+require_once __DIR__ . '/class-wp-term.php';
 require_once dirname( __DIR__ ) . '/wp-user-groups/includes/classes/class-user-taxonomy.php';
 require_once dirname( __DIR__ ) . '/wp-user-groups/includes/classes/class-user-taxonomy-list-table.php';

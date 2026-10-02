@@ -955,8 +955,8 @@ class WP_User_Taxonomy {
 			// Adding
 			if ( 'add' === $type ) {
 				if ( ! in_array( $term, $update_terms, true ) ) {
-					$update_terms[] = $term;
-					$should_update  = true;
+					$update_terms  = array( $term );
+					$should_update = true;
 				}
 
 			// Removing
@@ -983,7 +983,7 @@ class WP_User_Taxonomy {
 			// Update terms for users
 			if ( ( $update_terms !== $terms ) && ( true === $should_update ) ) {
 				$changed_users[] = $user_id;
-				wp_set_terms_for_user( $user_id, $this->taxonomy, $update_terms );
+				wp_set_terms_for_user( $user_id, $this->taxonomy, $update_terms, 'add' === $type );
 			}
 		}
 

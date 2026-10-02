@@ -93,6 +93,24 @@ final class UserTaxonomyTest extends TestCase {
 		$this->assertStringContainsString( 'Custom row action', $html );
 	}
 
+	/** Default row actions retain the view and edit links. */
+	public function test_default_row_actions_are_rendered_for_wordpress_objects(): void {
+		$GLOBALS['wpug_test']['returns']['current_user_can'] = true;
+
+		$taxonomy       = new WP_Taxonomy();
+		$taxonomy->name = 'user-group';
+		$term           = new WP_Term();
+		$term->term_id  = 8;
+		$term->slug     = 'editors';
+
+		$actions = $this->taxonomy()->get_term_row_actions( $taxonomy, $term );
+
+		$this->assertStringContainsString( '>View<', $actions );
+		$this->assertStringContainsString( '>Edit<', $actions );
+		$this->assertStringContainsString( 'user-group=editors', $actions );
+		$this->assertStringContainsString( 'tag_ID=8', $actions );
+	}
+
 	public function test_table_uses_taxonomy_column_filters(): void {
 		$GLOBALS['wpug_test']['returns']['current_user_can']  = false;
 		$GLOBALS['wpug_test']['returns']['is_object_in_term'] = false;
@@ -209,7 +227,7 @@ final class UserTaxonomyTest extends TestCase {
 		);
 
 		$this->assertSame(
-			array( 7, array( 'authors', 'editors' ), 'user-group', false ),
+			array( 7, array( 'editors' ), 'user-group', true ),
 			$GLOBALS['wpug_test']['calls']['wp_set_object_terms'][0]
 		);
 	}
@@ -288,5 +306,30 @@ final class UserTaxonomyTest extends TestCase {
 		$this->taxonomy()->update_term_user_count( array( 8 ), 'missing' );
 
 		$this->assertArrayNotHasKey( '_update_generic_term_count', $GLOBALS['wpug_test']['calls'] );
+	}
+
+	/** Missing slugs do not discard users from valid requested groups. */
+	public function test_user_filter_skips_missing_slugs_without_discarding_valid_groups(): void {
+		global $pagenow;
+
+		$pagenow            = 'users.php';
+		$_GET['user-group'] = 'editors,missing';
+		$GLOBALS['wpug_test']['callbacks']['get_term_by']       = static function ( $field, $slug ) {
+			if ( 'editors' !== $slug ) {
+				return false;
+			}
+
+			$term          = new WP_Term();
+			$term->term_id = 8;
+			$term->slug    = 'editors';
+
+			return $term;
+		};
+		$GLOBALS['wpug_test']['returns']['get_objects_in_term'] = array( 7 );
+		$query = (object) array( 'query_vars' => array() );
+
+		$this->taxonomy()->pre_get_users( $query );
+
+		$this->assertSame( array( 7 ), $query->query_vars['include'] );
 	}
 }
