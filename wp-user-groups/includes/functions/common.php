@@ -89,7 +89,7 @@ function wp_set_terms_for_user( $user = false, $taxonomy = '', $terms = array(),
  *
  * @param array<string, mixed> $args Optional. An array of `key => value` arguments to
  *                         match against the taxonomy objects. Default empty array.
- * @param string               $output   Optional. The type of output to return in the array.
+ * @param 'names'|'objects'    $output   Optional. The type of output to return in the array.
  *                                       Accepts either taxonomy 'names' or 'objects'. Default 'names'.
  * @param 'and'|'or'           $operator Optional. The logical operation to perform.
  *                         Accepts 'and' or 'or'. 'or' means only one element from
