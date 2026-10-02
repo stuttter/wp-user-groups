@@ -203,7 +203,7 @@ final class UserTaxonomyTest extends TestCase {
 		);
 	}
 
-	/** Bulk addition replaces the complete list after adding the requested term. */
+	/** Bulk addition appends the requested term and preserves existing relationships. */
 	public function test_bulk_add_preserves_existing_terms(): void {
 		$taxonomy = new WP_Taxonomy();
 

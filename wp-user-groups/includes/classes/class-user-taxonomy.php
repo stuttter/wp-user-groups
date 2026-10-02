@@ -492,8 +492,8 @@ class WP_User_Taxonomy {
 
 		// Bail if current user cannot assign terms to this user for this taxonomy
 			if ( ! $user instanceof WP_User || ! $this->can_assign( $user->ID ) ) {
-			return;
-		}
+				return;
+			}
 
 		$tax = get_taxonomy( $this->taxonomy );
 			if ( false === $tax ) {
@@ -830,7 +830,7 @@ class WP_User_Taxonomy {
 				/* translators: 1: term name, 2: singular taxonomy label. */
 				$actions[ "remove-{$term->slug}-{$this->taxonomy}" ] = sprintf( esc_html__( 'Remove from %1$s %2$s', 'wp-user-groups' ), $term->name, $tax->labels->singular_name );
 			}
-		}
+			}
 
 		// Return actions, maybe with our bulks added
 		return $actions;
@@ -914,8 +914,8 @@ class WP_User_Taxonomy {
 
 		// Bail if no users or terms to work with
 			if ( empty( $user_ids ) || empty( $terms ) || is_wp_error( $terms ) ) {
-			return $redirect_to;
-		}
+				return $redirect_to;
+			}
 
 		// New actions array
 		$actions = $changed_users = array();
@@ -1207,8 +1207,8 @@ class WP_User_Taxonomy {
 
 		// Bail if user has no terms
 			if ( empty( $terms ) || is_wp_error( $terms ) ) {
-			return false;
-		}
+				return false;
+			}
 
 		$in  = array();
 		$url = admin_url( 'users.php' );
