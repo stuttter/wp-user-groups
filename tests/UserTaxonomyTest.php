@@ -185,6 +185,61 @@ final class UserTaxonomyTest extends TestCase {
 		);
 	}
 
+	/** Bulk addition replaces the complete list after adding the requested term. */
+	public function test_bulk_add_preserves_existing_terms(): void {
+		$taxonomy = new WP_Taxonomy();
+
+		$taxonomy->cap = (object) array( 'assign_terms' => 'assign_user_groups' );
+
+		$GLOBALS['wpug_test']['returns']['get_taxonomy'] = $taxonomy;
+
+		$GLOBALS['wpug_test']['returns']['current_user_can'] = true;
+
+		$GLOBALS['wpug_test']['returns']['get_terms']           = array(
+			(object) array( 'slug' => 'editors' ),
+		);
+		$GLOBALS['wpug_test']['returns']['wp_get_object_terms'] = array(
+			(object) array( 'slug' => 'authors' ),
+		);
+
+		$this->taxonomy()->handle_bulk_actions(
+			'https://example.test/wp-admin/users.php',
+			'add-editors-user-group',
+			array( 7 )
+		);
+
+		$this->assertSame(
+			array( 7, array( 'authors', 'editors' ), 'user-group', false ),
+			$GLOBALS['wpug_test']['calls']['wp_set_object_terms'][0]
+		);
+	}
+
+	/** Bulk addition does not rewrite an existing relationship. */
+	public function test_bulk_add_skips_users_who_already_have_the_term(): void {
+		$taxonomy = new WP_Taxonomy();
+
+		$taxonomy->cap = (object) array( 'assign_terms' => 'assign_user_groups' );
+
+		$GLOBALS['wpug_test']['returns']['get_taxonomy'] = $taxonomy;
+
+		$GLOBALS['wpug_test']['returns']['current_user_can'] = true;
+
+		$GLOBALS['wpug_test']['returns']['get_terms']           = array(
+			(object) array( 'slug' => 'editors' ),
+		);
+		$GLOBALS['wpug_test']['returns']['wp_get_object_terms'] = array(
+			(object) array( 'slug' => 'editors' ),
+		);
+
+		$this->taxonomy()->handle_bulk_actions(
+			'https://example.test/wp-admin/users.php',
+			'add-editors-user-group',
+			array( 7 )
+		);
+
+		$this->assertArrayNotHasKey( 'wp_set_object_terms', $GLOBALS['wpug_test']['calls'] );
+	}
+
 	/** The WordPress callback shape may pass the taxonomy object directly. */
 	public function test_term_count_callback_accepts_a_taxonomy_object(): void {
 		$taxonomy = new WP_Taxonomy();
@@ -196,5 +251,42 @@ final class UserTaxonomyTest extends TestCase {
 			$GLOBALS['wpug_test']['calls']['_update_generic_term_count'][0]
 		);
 		$this->assertArrayNotHasKey( 'get_taxonomy', $GLOBALS['wpug_test']['calls'] );
+	}
+
+	/** A taxonomy name is resolved before the generic count callback runs. */
+	public function test_term_count_callback_resolves_a_taxonomy_name(): void {
+		$taxonomy = new WP_Taxonomy();
+
+		$GLOBALS['wpug_test']['returns']['get_taxonomy'] = $taxonomy;
+
+		$this->taxonomy()->update_term_user_count( array( 8 ), 'user-group' );
+
+		$this->assertSame(
+			array( array( 8 ), $taxonomy ),
+			$GLOBALS['wpug_test']['calls']['_update_generic_term_count'][0]
+		);
+	}
+
+	/** An empty taxonomy name falls back to the instance taxonomy. */
+	public function test_term_count_callback_uses_the_instance_taxonomy_by_default(): void {
+		$taxonomy = new WP_Taxonomy();
+
+		$GLOBALS['wpug_test']['returns']['get_taxonomy'] = $taxonomy;
+
+		$this->taxonomy()->update_term_user_count( array( 8 ) );
+
+		$this->assertSame(
+			array( 'user-group' ),
+			$GLOBALS['wpug_test']['calls']['get_taxonomy'][0]
+		);
+	}
+
+	/** A missing taxonomy does not invoke the generic count callback. */
+	public function test_term_count_callback_skips_a_missing_taxonomy(): void {
+		$GLOBALS['wpug_test']['returns']['get_taxonomy'] = false;
+
+		$this->taxonomy()->update_term_user_count( array( 8 ), 'missing' );
+
+		$this->assertArrayNotHasKey( '_update_generic_term_count', $GLOBALS['wpug_test']['calls'] );
 	}
 }
