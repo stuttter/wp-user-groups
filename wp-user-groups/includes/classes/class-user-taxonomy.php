@@ -411,8 +411,8 @@ class WP_User_Taxonomy {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @param array<int, int> $terms Term taxonomy IDs.
-	 * @param string          $taxonomy Taxonomy name.
+	 * @param array<int, int>   $terms    Term taxonomy IDs.
+	 * @param WP_Taxonomy|string $taxonomy Taxonomy name or object.
 	 * @return void
 	 */
 	public function update_term_user_count( $terms = array(), $taxonomy = '' ) {
@@ -422,7 +422,10 @@ class WP_User_Taxonomy {
 			$taxonomy = $this->taxonomy;
 		}
 
-			$taxonomy_object = get_taxonomy( $taxonomy );
+			$taxonomy_object = $taxonomy instanceof WP_Taxonomy
+				? $taxonomy
+				: get_taxonomy( $taxonomy );
+
 			if ( false !== $taxonomy_object ) {
 				_update_generic_term_count( $terms, $taxonomy_object );
 			}
@@ -980,7 +983,7 @@ class WP_User_Taxonomy {
 			// Update terms for users
 			if ( ( $update_terms !== $terms ) && ( true === $should_update ) ) {
 				$changed_users[] = $user_id;
-				wp_set_terms_for_user( $user_id, $this->taxonomy, $update_terms, true );
+				wp_set_terms_for_user( $user_id, $this->taxonomy, $update_terms );
 			}
 		}
 

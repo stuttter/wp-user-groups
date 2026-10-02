@@ -25,6 +25,22 @@ function get_taxonomies( ...$arguments ) { return wpug_test_call( __FUNCTION__, 
 function wp_parse_args( $args, $defaults = array() ) { return array_merge( $defaults, (array) $args ); }
 function get_terms( ...$arguments ) { return wpug_test_call( __FUNCTION__, $arguments ); }
 /**
+ * Stub get_taxonomy().
+ *
+ * @param mixed ...$arguments Function arguments.
+ */
+function get_taxonomy( ...$arguments ) {
+	return wpug_test_call( __FUNCTION__, $arguments );
+}
+/**
+ * Stub _update_generic_term_count().
+ *
+ * @param mixed ...$arguments Function arguments.
+ */
+function _update_generic_term_count( ...$arguments ) {
+	return wpug_test_call( __FUNCTION__, $arguments );
+}
+/**
  * Stub get_term_by().
  *
  * @param mixed ...$arguments Function arguments.
@@ -139,5 +155,6 @@ class WP_List_Table {
 
 require_once dirname( __DIR__ ) . '/wp-user-groups/includes/functions/common.php';
 require_once dirname( __DIR__ ) . '/wp-user-groups/includes/functions/admin.php';
+require_once __DIR__ . '/class-wp-taxonomy.php';
 require_once dirname( __DIR__ ) . '/wp-user-groups/includes/classes/class-user-taxonomy.php';
 require_once dirname( __DIR__ ) . '/wp-user-groups/includes/classes/class-user-taxonomy-list-table.php';

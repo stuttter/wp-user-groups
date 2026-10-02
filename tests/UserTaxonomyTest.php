@@ -154,4 +154,47 @@ final class UserTaxonomyTest extends TestCase {
 		$this->assertStringContainsString( '<p><strong>Trusted</strong></p>', $html );
 		$this->assertStringNotContainsString( '<script>', $html );
 	}
+
+	/** Bulk removal replaces a user's terms instead of appending them. */
+	public function test_bulk_remove_replaces_existing_terms(): void {
+		$taxonomy = new WP_Taxonomy();
+
+		$taxonomy->cap = (object) array( 'assign_terms' => 'assign_user_groups' );
+
+		$GLOBALS['wpug_test']['returns']['get_taxonomy'] = $taxonomy;
+
+		$GLOBALS['wpug_test']['returns']['current_user_can'] = true;
+
+		$GLOBALS['wpug_test']['returns']['get_terms']           = array(
+			(object) array( 'slug' => 'editors' ),
+		);
+		$GLOBALS['wpug_test']['returns']['wp_get_object_terms'] = array(
+			(object) array( 'slug' => 'editors' ),
+			(object) array( 'slug' => 'authors' ),
+		);
+
+		$this->taxonomy()->handle_bulk_actions(
+			'https://example.test/wp-admin/users.php',
+			'remove-editors-user-group',
+			array( 7 )
+		);
+
+		$this->assertSame(
+			array( 7, array( 1 => 'authors' ), 'user-group', false ),
+			$GLOBALS['wpug_test']['calls']['wp_set_object_terms'][0]
+		);
+	}
+
+	/** The WordPress callback shape may pass the taxonomy object directly. */
+	public function test_term_count_callback_accepts_a_taxonomy_object(): void {
+		$taxonomy = new WP_Taxonomy();
+
+		$this->taxonomy()->update_term_user_count( array( 8 ), $taxonomy );
+
+		$this->assertSame(
+			array( array( 8 ), $taxonomy ),
+			$GLOBALS['wpug_test']['calls']['_update_generic_term_count'][0]
+		);
+		$this->assertArrayNotHasKey( 'get_taxonomy', $GLOBALS['wpug_test']['calls'] );
+	}
 }
