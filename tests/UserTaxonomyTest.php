@@ -93,6 +93,24 @@ final class UserTaxonomyTest extends TestCase {
 		$this->assertStringContainsString( 'Custom row action', $html );
 	}
 
+	/** Default row actions retain the view and edit links. */
+	public function test_default_row_actions_are_rendered_for_wordpress_objects(): void {
+		$GLOBALS['wpug_test']['returns']['current_user_can'] = true;
+
+		$taxonomy       = new WP_Taxonomy();
+		$taxonomy->name = 'user-group';
+		$term           = new WP_Term();
+		$term->term_id  = 8;
+		$term->slug     = 'editors';
+
+		$actions = $this->taxonomy()->get_term_row_actions( $taxonomy, $term );
+
+		$this->assertStringContainsString( '>View<', $actions );
+		$this->assertStringContainsString( '>Edit<', $actions );
+		$this->assertStringContainsString( 'user-group=editors', $actions );
+		$this->assertStringContainsString( 'tag_ID=8', $actions );
+	}
+
 	public function test_table_uses_taxonomy_column_filters(): void {
 		$GLOBALS['wpug_test']['returns']['current_user_can']  = false;
 		$GLOBALS['wpug_test']['returns']['is_object_in_term'] = false;
@@ -153,5 +171,165 @@ final class UserTaxonomyTest extends TestCase {
 		$this->assertStringContainsString( '<a href="https://example.test/wp-admin/edit-tags.php?action=edit&amp;taxonomy=user-group&amp;tag_ID=8">Editors &lt;script&gt;alert(&quot;name&quot;)&lt;/script&gt;</a>', $html );
 		$this->assertStringContainsString( '<p><strong>Trusted</strong></p>', $html );
 		$this->assertStringNotContainsString( '<script>', $html );
+	}
+
+	/** Bulk removal replaces a user's terms instead of appending them. */
+	public function test_bulk_remove_replaces_existing_terms(): void {
+		$taxonomy = new WP_Taxonomy();
+
+		$taxonomy->cap = (object) array( 'assign_terms' => 'assign_user_groups' );
+
+		$GLOBALS['wpug_test']['returns']['get_taxonomy'] = $taxonomy;
+
+		$GLOBALS['wpug_test']['returns']['current_user_can'] = true;
+
+		$GLOBALS['wpug_test']['returns']['get_terms']           = array(
+			(object) array( 'slug' => 'editors' ),
+		);
+		$GLOBALS['wpug_test']['returns']['wp_get_object_terms'] = array(
+			(object) array( 'slug' => 'editors' ),
+			(object) array( 'slug' => 'authors' ),
+		);
+
+		$this->taxonomy()->handle_bulk_actions(
+			'https://example.test/wp-admin/users.php',
+			'remove-editors-user-group',
+			array( 7 )
+		);
+
+		$this->assertSame(
+			array( 7, array( 1 => 'authors' ), 'user-group', false ),
+			$GLOBALS['wpug_test']['calls']['wp_set_object_terms'][0]
+		);
+	}
+
+	/** Bulk addition appends the requested term and preserves existing relationships. */
+	public function test_bulk_add_preserves_existing_terms(): void {
+		$taxonomy = new WP_Taxonomy();
+
+		$taxonomy->cap = (object) array( 'assign_terms' => 'assign_user_groups' );
+
+		$GLOBALS['wpug_test']['returns']['get_taxonomy'] = $taxonomy;
+
+		$GLOBALS['wpug_test']['returns']['current_user_can'] = true;
+
+		$GLOBALS['wpug_test']['returns']['get_terms']           = array(
+			(object) array( 'slug' => 'editors' ),
+		);
+		$GLOBALS['wpug_test']['returns']['wp_get_object_terms'] = array(
+			(object) array( 'slug' => 'authors' ),
+		);
+
+		$this->taxonomy()->handle_bulk_actions(
+			'https://example.test/wp-admin/users.php',
+			'add-editors-user-group',
+			array( 7 )
+		);
+
+		$this->assertSame(
+			array( 7, array( 'editors' ), 'user-group', true ),
+			$GLOBALS['wpug_test']['calls']['wp_set_object_terms'][0]
+		);
+	}
+
+	/** Bulk addition does not rewrite an existing relationship. */
+	public function test_bulk_add_skips_users_who_already_have_the_term(): void {
+		$taxonomy = new WP_Taxonomy();
+
+		$taxonomy->cap = (object) array( 'assign_terms' => 'assign_user_groups' );
+
+		$GLOBALS['wpug_test']['returns']['get_taxonomy'] = $taxonomy;
+
+		$GLOBALS['wpug_test']['returns']['current_user_can'] = true;
+
+		$GLOBALS['wpug_test']['returns']['get_terms']           = array(
+			(object) array( 'slug' => 'editors' ),
+		);
+		$GLOBALS['wpug_test']['returns']['wp_get_object_terms'] = array(
+			(object) array( 'slug' => 'editors' ),
+		);
+
+		$this->taxonomy()->handle_bulk_actions(
+			'https://example.test/wp-admin/users.php',
+			'add-editors-user-group',
+			array( 7 )
+		);
+
+		$this->assertArrayNotHasKey( 'wp_set_object_terms', $GLOBALS['wpug_test']['calls'] );
+	}
+
+	/** The WordPress callback shape may pass the taxonomy object directly. */
+	public function test_term_count_callback_accepts_a_taxonomy_object(): void {
+		$taxonomy = new WP_Taxonomy();
+
+		$this->taxonomy()->update_term_user_count( array( 8 ), $taxonomy );
+
+		$this->assertSame(
+			array( array( 8 ), $taxonomy ),
+			$GLOBALS['wpug_test']['calls']['_update_generic_term_count'][0]
+		);
+		$this->assertArrayNotHasKey( 'get_taxonomy', $GLOBALS['wpug_test']['calls'] );
+	}
+
+	/** A taxonomy name is resolved before the generic count callback runs. */
+	public function test_term_count_callback_resolves_a_taxonomy_name(): void {
+		$taxonomy = new WP_Taxonomy();
+
+		$GLOBALS['wpug_test']['returns']['get_taxonomy'] = $taxonomy;
+
+		$this->taxonomy()->update_term_user_count( array( 8 ), 'user-group' );
+
+		$this->assertSame(
+			array( array( 8 ), $taxonomy ),
+			$GLOBALS['wpug_test']['calls']['_update_generic_term_count'][0]
+		);
+	}
+
+	/** An empty taxonomy name falls back to the instance taxonomy. */
+	public function test_term_count_callback_uses_the_instance_taxonomy_by_default(): void {
+		$taxonomy = new WP_Taxonomy();
+
+		$GLOBALS['wpug_test']['returns']['get_taxonomy'] = $taxonomy;
+
+		$this->taxonomy()->update_term_user_count( array( 8 ) );
+
+		$this->assertSame(
+			array( 'user-group' ),
+			$GLOBALS['wpug_test']['calls']['get_taxonomy'][0]
+		);
+	}
+
+	/** A missing taxonomy does not invoke the generic count callback. */
+	public function test_term_count_callback_skips_a_missing_taxonomy(): void {
+		$GLOBALS['wpug_test']['returns']['get_taxonomy'] = false;
+
+		$this->taxonomy()->update_term_user_count( array( 8 ), 'missing' );
+
+		$this->assertArrayNotHasKey( '_update_generic_term_count', $GLOBALS['wpug_test']['calls'] );
+	}
+
+	/** Missing slugs do not discard users from valid requested groups. */
+	public function test_user_filter_skips_missing_slugs_without_discarding_valid_groups(): void {
+		global $pagenow;
+
+		$pagenow            = 'users.php';
+		$_GET['user-group'] = 'editors,missing';
+		$GLOBALS['wpug_test']['callbacks']['get_term_by']       = static function ( $field, $slug ) {
+			if ( 'editors' !== $slug ) {
+				return false;
+			}
+
+			$term          = new WP_Term();
+			$term->term_id = 8;
+			$term->slug    = 'editors';
+
+			return $term;
+		};
+		$GLOBALS['wpug_test']['returns']['get_objects_in_term'] = array( 7 );
+		$query = (object) array( 'query_vars' => array() );
+
+		$this->taxonomy()->pre_get_users( $query );
+
+		$this->assertSame( array( 7 ), $query->query_vars['include'] );
 	}
 }

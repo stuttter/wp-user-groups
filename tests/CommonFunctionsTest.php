@@ -27,7 +27,7 @@ final class CommonFunctionsTest extends TestCase {
 	}
 
 	public function test_empty_terms_delete_relationships_and_clean_cache(): void {
-		wp_set_terms_for_user( 7, 'user-group', array() );
+		$this->assertNull( wp_set_terms_for_user( 7, 'user-group', array() ) );
 
 		$this->assertSame( array( 7, 'user-group' ), $GLOBALS['wpug_test']['calls']['wp_delete_object_term_relationships'][0] );
 		$this->assertSame( array( 7, 'user-group' ), $GLOBALS['wpug_test']['calls']['clean_object_term_cache'][0] );
@@ -35,12 +35,30 @@ final class CommonFunctionsTest extends TestCase {
 	}
 
 	public function test_terms_are_replaced_and_cache_is_cleaned(): void {
-		wp_set_terms_for_user( 7, 'user-group', array( 'editors' ) );
+		$this->assertNull( wp_set_terms_for_user( 7, 'user-group', array( 'editors' ) ) );
 
 		$this->assertSame(
 			array( 7, array( 'editors' ), 'user-group', false ),
 			$GLOBALS['wpug_test']['calls']['wp_set_object_terms'][0]
 		);
 		$this->assertSame( array( 7, 'user-group' ), $GLOBALS['wpug_test']['calls']['clean_object_term_cache'][0] );
+	}
+
+	/** Test appending terms preserves existing relationships. */
+	public function test_terms_can_be_appended_without_replacing_existing_relationships(): void {
+		wp_set_terms_for_user( 7, 'user-group', array( 'editors' ), true );
+
+		$this->assertSame(
+			array( 7, array( 'editors' ), 'user-group', true ),
+			$GLOBALS['wpug_test']['calls']['wp_set_object_terms'][0]
+		);
+	}
+
+	/** Test a missing group returns no users. */
+	public function test_get_users_of_group_returns_empty_when_the_term_does_not_exist(): void {
+		$GLOBALS['wpug_test']['returns']['get_term_by'] = false;
+
+		$this->assertSame( array(), wp_get_users_of_group() );
+		$this->assertArrayNotHasKey( 'get_objects_in_term', $GLOBALS['wpug_test']['calls'] );
 	}
 }

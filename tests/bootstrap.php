@@ -24,6 +24,46 @@ function clean_object_term_cache( ...$arguments ) { return wpug_test_call( __FUN
 function get_taxonomies( ...$arguments ) { return wpug_test_call( __FUNCTION__, $arguments ); }
 function wp_parse_args( $args, $defaults = array() ) { return array_merge( $defaults, (array) $args ); }
 function get_terms( ...$arguments ) { return wpug_test_call( __FUNCTION__, $arguments ); }
+/**
+ * Stub get_taxonomy().
+ *
+ * @param mixed ...$arguments Function arguments.
+ */
+function get_taxonomy( ...$arguments ) {
+	return wpug_test_call( __FUNCTION__, $arguments );
+}
+/**
+ * Stub _update_generic_term_count().
+ *
+ * @param mixed ...$arguments Function arguments.
+ */
+function _update_generic_term_count( ...$arguments ) {
+	return wpug_test_call( __FUNCTION__, $arguments );
+}
+/**
+ * Stub get_term_by().
+ *
+ * @param mixed ...$arguments Function arguments.
+ */
+function get_term_by( ...$arguments ) {
+	return wpug_test_call( __FUNCTION__, $arguments );
+}
+/**
+ * Stub get_objects_in_term().
+ *
+ * @param mixed ...$arguments Function arguments.
+ */
+function get_objects_in_term( ...$arguments ) {
+	return wpug_test_call( __FUNCTION__, $arguments );
+}
+/**
+ * Stub get_users().
+ *
+ * @param mixed ...$arguments Function arguments.
+ */
+function get_users( ...$arguments ) {
+	return wpug_test_call( __FUNCTION__, $arguments );
+}
 function is_wp_error( $value ) { return $value instanceof WP_Error; }
 function esc_html__( $text ) { return $text; }
 function apply_filters( $hook, $value, ...$arguments ) { return wpug_test_call( __FUNCTION__ . ':' . $hook, array_merge( array( $value ), $arguments ) ) ?? $value; }
@@ -115,5 +155,7 @@ class WP_List_Table {
 
 require_once dirname( __DIR__ ) . '/wp-user-groups/includes/functions/common.php';
 require_once dirname( __DIR__ ) . '/wp-user-groups/includes/functions/admin.php';
+require_once __DIR__ . '/class-wp-taxonomy.php';
+require_once __DIR__ . '/class-wp-term.php';
 require_once dirname( __DIR__ ) . '/wp-user-groups/includes/classes/class-user-taxonomy.php';
 require_once dirname( __DIR__ ) . '/wp-user-groups/includes/classes/class-user-taxonomy-list-table.php';

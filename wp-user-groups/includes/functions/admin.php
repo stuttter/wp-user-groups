@@ -13,12 +13,13 @@ defined( 'ABSPATH' ) || exit;
  * Tweak admin styling for a user groups layout
  *
  * @since 0.1.4
+ * @return void
  */
 function wp_user_groups_admin_assets() {
-	$url = wp_user_groups_get_plugin_url();	
+	$url = wp_user_groups_get_plugin_url();
 	$ver = wp_user_groups_get_asset_version();
 
-	wp_enqueue_style( 'wp_user_groups', $url. 'assets/css/user-groups.css', false, $ver, false );
+	wp_enqueue_style( 'wp_user_groups', $url . 'assets/css/user-groups.css', array(), (string) $ver );
 }
 
 
@@ -30,8 +31,8 @@ function wp_user_groups_admin_assets() {
  *
  * @since 0.1.9
  *
- * @param array $sections Array of existing profile sections.
- * @return array Modified sections array with Groups section added only if groups exist.
+ * @param array<string, array<string, mixed>> $sections Array of existing profile sections.
+ * @return array<string, array<string, mixed>> Modified sections array with Groups section added only if groups exist.
  */
 function wp_user_groups_add_profile_section( $sections = array() ) {
 
@@ -42,12 +43,15 @@ function wp_user_groups_add_profile_section( $sections = array() ) {
 	// Check if any user group taxonomy has terms
 	if ( ! empty( $taxonomies ) ) {
 		foreach ( $taxonomies as $taxonomy ) {
-			$terms = get_terms( array(
-				'taxonomy'   => $taxonomy,
-				'hide_empty' => false,
-				'number'     => 1,
-				'fields'     => 'ids',
-			) );
+			$taxonomy = $taxonomy instanceof WP_Taxonomy ? $taxonomy->name : $taxonomy;
+			$terms    = get_terms(
+				array(
+					'taxonomy'   => $taxonomy,
+					'hide_empty' => false,
+					'number'     => 1,
+					'fields'     => 'ids',
+				)
+			);
 			if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
 				$has_terms = true;
 				break;
@@ -65,13 +69,13 @@ function wp_user_groups_add_profile_section( $sections = array() ) {
 
 	// Add the "Groups" section
 	$new_sections['groups'] = array(
-		'id'    => 'groups',
-		'slug'  => 'groups',
-		'name'  => esc_html__( 'Groups', 'wp-user-groups' ),
-		'cap'   => 'edit_profile',
-		'icon'  => 'dashicons-groups',
+		'id'     => 'groups',
+		'slug'   => 'groups',
+		'name'   => esc_html__( 'Groups', 'wp-user-groups' ),
+		'cap'    => 'edit_profile',
+		'icon'   => 'dashicons-groups',
 		'parent' => '',
-		'order' => 90
+		'order'  => 90,
 	);
 
 	// Filter & return

@@ -1,0 +1,17 @@
+includes:
+    - vendor/johnbillion/wp-compat/extension.neon
+
+parameters:
+    level: 7
+    phpVersion: 70400
+    paths:
+        - wp-user-groups.php
+        - wp-user-groups
+    scanFiles:
+        - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
+        - tests/phpstan-stubs.php
+    tmpDir: build/phpstan
+    parallel:
+        maximumNumberOfProcesses: 1
+    WPCompat:
+        pluginFile: wp-user-groups.php
